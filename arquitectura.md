@@ -16,6 +16,7 @@ El sistema está estructurado bajo el patrón **Model-View-Controller (MVC)** (A
 
 ## 📁 2. Estructura de Directorios del Proyecto
 
+```text
 SistemaReclamamos/
 │
 ├── config/                  # Configuración principal del proyecto Django (settings, urls, wsgi)

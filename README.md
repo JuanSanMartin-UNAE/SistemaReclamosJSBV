@@ -25,6 +25,7 @@ El desarrollo sigue una arquitectura web responsiva basada en el siguiente stack
 **Backend Framework:** Django 5.2
 **Frontend:** HTML5, CSS3, JavaScript y Bootstrap (diseño responsivo / adaptativo)
 **Base de Datos:** PostgreSQL
+**SQLAlchemy** biblioteca de código abierto para Python que permite conectar y gestionar bases de datos relacionales usando código en lugar de escribir consultas SQL tradicionales
 **APIs & Servicios Externos:**
 **Google Maps API:** Para geolocalización precisa de los incidentes/reclamos
 **Twilio API:** Para el envío automatizado de notificaciones vía SMS / Correo Electrónico

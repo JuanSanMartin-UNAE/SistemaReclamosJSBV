@@ -1,0 +1,31 @@
+{% extends 'reclamos_app/base.html' %}
+
+{% block titulo %}Barrios{% endblock %}
+
+{% block contenido %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Barrios</h1>
+    <a href="{% url 'reclamos_app:barrio_crear' %}" class="btn btn-primary">Nuevo barrio</a>
+</div>
+<table class="table table-striped bg-white">
+    <thead>
+        <tr><th>ID</th><th>Nombre</th><th>Fecha de alta</th><th></th></tr>
+    </thead>
+    <tbody>
+        {% for barrio in barrios %}
+        <tr>
+            <td>{{ barrio.id_barrio }}</td>
+            <td>{{ barrio.nombre_barrio }}</td>
+            <td>{{ barrio.fecha_alta|date:"d/m/Y" }}</td>
+            <td class="text-end">
+                <a href="{% url 'reclamos_app:barrio_editar' barrio.pk %}" class="btn btn-sm btn-outline-primary">Editar</a>
+                <a href="{% url 'reclamos_app:barrio_eliminar' barrio.pk %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="text-center text-muted">No hay barrios registrados.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% include 'reclamos_app/comun/paginacion.html' %}
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'reclamos_app/base.html' %}
+
+{% block titulo %}Usuarios{% endblock %}
+
+{% block contenido %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Usuarios</h1>
+    <a href="{% url 'reclamos_app:usuario_crear' %}" class="btn btn-primary">Nuevo usuario</a>
+</div>
+<table class="table table-striped bg-white">
+    <thead>
+        <tr><th>Documento</th><th>Apellido y nombre</th><th>Teléfono</th><th>Barrio</th><th>Rol</th><th>Activo</th><th></th></tr>
+    </thead>
+    <tbody>
+        {% for usuario in usuarios %}
+        <tr>
+            <td>{{ usuario.num_documento }}</td>
+            <td>{{ usuario }}</td>
+            <td>{{ usuario.telefono }}</td>
+            <td>{{ usuario.barrio|default:"-" }}</td>
+            <td>{{ usuario.rol|default:"-" }}</td>
+            <td>{{ usuario.activo|yesno:"Sí,No" }}</td>
+            <td class="text-end">
+                <a href="{% url 'reclamos_app:usuario_editar' usuario.pk %}" class="btn btn-sm btn-outline-primary">Editar</a>
+                <a href="{% url 'reclamos_app:usuario_eliminar' usuario.pk %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center text-muted">No hay usuarios registrados.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% include 'reclamos_app/comun/paginacion.html' %}
+{% endblock %}

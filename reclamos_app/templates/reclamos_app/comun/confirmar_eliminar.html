@@ -1,0 +1,15 @@
+{% extends 'reclamos_app/base.html' %}
+
+{% block titulo %}Eliminar{% endblock %}
+
+{% block contenido %}
+<h1 class="mb-4">Eliminar registro</h1>
+<form method="post" class="card card-body">
+    {% csrf_token %}
+    <p>¿Seguro que desea eliminar <strong>{{ object }}</strong>?</p>
+    <div>
+        <button type="submit" class="btn btn-danger">Eliminar</button>
+        <a href="{{ url_volver }}" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+venv/
+.venv/
+.env
+db.sqlite3
+.vscode/
+.idea/
+
+# Respaldos de la base de datos (contienen datos personales)
+respaldo*.sql
+backups/
+
+# Archivos subidos por usuarios
+media/

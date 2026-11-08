@@ -1,0 +1,15 @@
+# Reglas de Proyecto - Sistema de Gestión de Reclamos JSBV
+# Resolución CSG Nº 33/2026 UNAE
+
+- Stack: Python 3.14, Django 5.2 LTS, PostgreSQL 16, Bootstrap 5, Docker.
+- Arquitectura: Respetar estrictamente el patrón MVT de Django.
+- Prohibiciones (Boundary Spec):
+  * NO modificar modelos ni esquemas DDL sin validación previa.
+  * NO exponer API Keys o contraseñas en código; usar siempre os.environ / .env.
+  * NO alterar la regla de negocio: máximo 5 reclamos activos por funcionario.
+  * Mantener timeout de inactividad de sesión a 10 minutos (RNF-01).
+- Calidad (Quality Spec):
+  * Guía PEP 8 obligatoria (flake8 y black).
+  * Modelos y Clases en PascalCase, funciones/variables en snake_case.
+  * Manejo explícito de excepciones (try/except específico) y logging.
+  * Cobertura de pruebas mínima de 80% con pytest-django.

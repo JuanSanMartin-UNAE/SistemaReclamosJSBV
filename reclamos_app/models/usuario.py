@@ -1,4 +1,4 @@
-from django.contrib.auth.hashers import check_password, make_password
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.utils import timezone
 
@@ -6,15 +6,41 @@ from .barrio import Barrio
 from .rol import Rol
 
 
-class Usuario(models.Model):
+class UsuarioManager(BaseUserManager):
+    use_in_migrations = True
+
+    def _crear(self, num_documento, password, **campos):
+        if not num_documento:
+            raise ValueError('El número de documento es obligatorio.')
+        if campos.get('correo_electronico'):
+            campos['correo_electronico'] = self.normalize_email(campos['correo_electronico'])
+        usuario = self.model(num_documento=num_documento, **campos)
+        usuario.set_password(password)
+        usuario.save(using=self._db)
+        return usuario
+
+    def create_user(self, num_documento, password=None, **campos):
+        campos.setdefault('is_staff', False)
+        campos.setdefault('is_superuser', False)
+        return self._crear(num_documento, password, **campos)
+
+    def create_superuser(self, num_documento, password=None, **campos):
+        campos['is_staff'] = True
+        campos['is_superuser'] = True
+        return self._crear(num_documento, password, **campos)
+
+
+class Usuario(AbstractBaseUser, PermissionsMixin):
     id_usuario = models.AutoField(
         primary_key=True,
-        db_column='Id_usuario',
+        db_column='id_usuario',
         db_comment='Identificador único del usuario proporcionado por el sistema',
     )
     num_documento = models.CharField(
         'número de documento',
         max_length=20,
+        unique=True,
+        error_messages={'unique': 'Ya existe un usuario con este número de documento.'},
         db_comment='Número de documento de identidad del usuario',
     )
     nombre = models.CharField(
@@ -33,8 +59,8 @@ class Usuario(models.Model):
     correo_electronico = models.EmailField(
         'correo electrónico',
         max_length=150,
-        null=True,
         blank=True,
+        default='',
         db_comment='Correo del usuario',
     )
     direccion = models.TextField(
@@ -48,13 +74,14 @@ class Usuario(models.Model):
         on_delete=models.PROTECT,
         null=True,
         blank=True,
-        db_column='Id_barrio',
+        db_column='id_barrio',
         related_name='usuarios',
         db_comment='Número de barrio asignado/escogido proporcionado por el sistema',
     )
-    contrasenha = models.CharField(
+    password = models.CharField(
         'contraseña',
         max_length=255,
+        db_column='contrasenha',
         db_comment='Contraseña encriptada (Hash)',
     )
     rol = models.ForeignKey(
@@ -66,18 +93,46 @@ class Usuario(models.Model):
         related_name='usuarios',
         db_comment='Número rol asignado/escogido proporcionado por el sistema',
     )
-    fecha_inicio = models.DateTimeField(
+    fecha_inicio = models.DateField(
         'fecha de registro',
-        default=timezone.now,
+        default=timezone.localdate,
         db_comment='Fecha en que se registra el usuario',
     )
-    activo = models.BooleanField(
+    is_active = models.BooleanField(
+        'activo',
         default=True,
+        db_column='activo',
         db_comment='Estado de la cuenta activa/inactivo',
     )
+    is_staff = models.BooleanField(
+        'acceso al panel de administración',
+        default=False,
+        db_column='es_staff',
+        db_comment='Indica si el usuario puede ingresar al panel de administración',
+    )
+    is_superuser = models.BooleanField(
+        'superusuario',
+        default=False,
+        db_column='es_superusuario',
+        help_text='Tiene todos los permisos sin necesidad de asignarlos explícitamente.',
+        db_comment='Indica si el usuario tiene todos los permisos del sistema',
+    )
+    last_login = models.DateTimeField(
+        'último acceso',
+        null=True,
+        blank=True,
+        db_column='ultimo_acceso',
+        db_comment='Fecha y hora del último inicio de sesión',
+    )
+
+    objects = UsuarioManager()
+
+    USERNAME_FIELD = 'num_documento'
+    EMAIL_FIELD = 'correo_electronico'
+    REQUIRED_FIELDS = ['nombre', 'apellido', 'telefono']
 
     class Meta:
-        db_table = 'Usuarios'
+        db_table = 'usuarios'
         ordering = ['apellido', 'nombre']
         verbose_name = 'usuario'
         verbose_name_plural = 'usuarios'
@@ -85,8 +140,18 @@ class Usuario(models.Model):
     def __str__(self):
         return f'{self.apellido}, {self.nombre}'
 
-    def set_contrasenha(self, contrasenha_plana):
-        self.contrasenha = make_password(contrasenha_plana)
+    def get_full_name(self):
+        return f'{self.nombre} {self.apellido}'.strip()
 
-    def verificar_contrasenha(self, contrasenha_plana):
-        return check_password(contrasenha_plana, self.contrasenha)
+    def get_short_name(self):
+        return self.nombre
+
+    @property
+    def iniciales(self):
+        return f'{self.nombre[:1]}{self.apellido[:1]}'.upper()
+
+    @property
+    def es_administrador(self):
+        if self.is_superuser or self.is_staff:
+            return True
+        return bool(self.rol_id) and self.rol.nombre_rol == 'Administrador'

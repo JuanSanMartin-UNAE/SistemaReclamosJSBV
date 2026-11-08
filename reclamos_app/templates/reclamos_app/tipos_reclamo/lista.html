@@ -1,0 +1,40 @@
+{% extends 'reclamos_app/base.html' %}
+
+{% block titulo %}Tipos de reclamo{% endblock %}
+{% block titulo_barra %}Tipos de reclamo{% endblock %}
+
+{% block contenido %}
+<div class="encabezado-pagina">
+    <div>
+        <h1>Tipos de reclamo</h1>
+        <p>Motivos preestablecidos con su clasificación y plazo de respuesta.</p>
+    </div>
+    <a href="{% url 'reclamos_app:tipo_reclamo_crear' %}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Nuevo tipo</a>
+</div>
+
+<div class="tarjeta overflow-hidden">
+    <table class="table tabla tabla-apilada">
+        <thead>
+            <tr><th>ID</th><th>Motivo</th><th>Clasificación</th><th>Plazo (días)</th><th>Fecha de alta</th><th class="text-end">Acciones</th></tr>
+        </thead>
+        <tbody>
+            {% for tipo in tipos %}
+            <tr>
+                <td data-etiqueta="ID" class="text-secondary">#{{ tipo.id_tipo_reclamo }}</td>
+                <td data-etiqueta="Motivo" class="fw-medium">{{ tipo.reclamo }}</td>
+                <td data-etiqueta="Clasificación">{{ tipo.clase_reclamo }}</td>
+                <td data-etiqueta="Plazo">{{ tipo.plazo_dias }}</td>
+                <td data-etiqueta="Fecha de alta">{{ tipo.fecha_alta|date:"d/m/Y" }}</td>
+                <td class="acciones text-end">
+                    <a href="{% url 'reclamos_app:tipo_reclamo_editar' tipo.pk %}" class="btn btn-sm btn-light" title="Editar"><i class="bi bi-pencil"></i><span class="d-md-none ms-1">Editar</span></a>
+                    <a href="{% url 'reclamos_app:tipo_reclamo_eliminar' tipo.pk %}" class="btn btn-sm btn-light text-danger" title="Eliminar"><i class="bi bi-trash"></i><span class="d-md-none ms-1">Eliminar</span></a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="vacio"><div class="estado-vacio"><i class="bi bi-list-check"></i>No hay tipos de reclamo registrados.</div></td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% include 'reclamos_app/comun/paginacion.html' %}
+{% endblock %}

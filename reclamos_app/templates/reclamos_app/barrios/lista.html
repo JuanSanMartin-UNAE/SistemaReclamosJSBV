@@ -1,31 +1,38 @@
 {% extends 'reclamos_app/base.html' %}
 
 {% block titulo %}Barrios{% endblock %}
+{% block titulo_barra %}Barrios{% endblock %}
 
 {% block contenido %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1>Barrios</h1>
-    <a href="{% url 'reclamos_app:barrio_crear' %}" class="btn btn-primary">Nuevo barrio</a>
+<div class="encabezado-pagina">
+    <div>
+        <h1>Barrios</h1>
+        <p>Barrios de la ciudad atendidos por la Junta de Saneamiento.</p>
+    </div>
+    <a href="{% url 'reclamos_app:barrio_crear' %}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Nuevo barrio</a>
 </div>
-<table class="table table-striped bg-white">
-    <thead>
-        <tr><th>ID</th><th>Nombre</th><th>Fecha de alta</th><th></th></tr>
-    </thead>
-    <tbody>
-        {% for barrio in barrios %}
-        <tr>
-            <td>{{ barrio.id_barrio }}</td>
-            <td>{{ barrio.nombre_barrio }}</td>
-            <td>{{ barrio.fecha_alta|date:"d/m/Y" }}</td>
-            <td class="text-end">
-                <a href="{% url 'reclamos_app:barrio_editar' barrio.pk %}" class="btn btn-sm btn-outline-primary">Editar</a>
-                <a href="{% url 'reclamos_app:barrio_eliminar' barrio.pk %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
-            </td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="4" class="text-center text-muted">No hay barrios registrados.</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
+
+<div class="tarjeta overflow-hidden">
+    <table class="table tabla tabla-apilada">
+        <thead>
+            <tr><th>ID</th><th>Nombre</th><th>Fecha de alta</th><th class="text-end">Acciones</th></tr>
+        </thead>
+        <tbody>
+            {% for barrio in barrios %}
+            <tr>
+                <td data-etiqueta="ID" class="text-secondary">#{{ barrio.id_barrio }}</td>
+                <td data-etiqueta="Nombre" class="fw-medium">{{ barrio.nombre_barrio }}</td>
+                <td data-etiqueta="Fecha de alta">{{ barrio.fecha_alta|date:"d/m/Y" }}</td>
+                <td class="acciones text-end">
+                    <a href="{% url 'reclamos_app:barrio_editar' barrio.pk %}" class="btn btn-sm btn-light" title="Editar"><i class="bi bi-pencil"></i><span class="d-md-none ms-1">Editar</span></a>
+                    <a href="{% url 'reclamos_app:barrio_eliminar' barrio.pk %}" class="btn btn-sm btn-light text-danger" title="Eliminar"><i class="bi bi-trash"></i><span class="d-md-none ms-1">Eliminar</span></a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="vacio"><div class="estado-vacio"><i class="bi bi-geo-alt"></i>No hay barrios registrados.</div></td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% include 'reclamos_app/comun/paginacion.html' %}
 {% endblock %}

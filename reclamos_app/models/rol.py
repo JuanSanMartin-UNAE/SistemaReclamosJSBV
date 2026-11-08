@@ -9,7 +9,7 @@ class Rol(models.Model):
 
     id_rol = models.AutoField(
         primary_key=True,
-        db_column='Id_rol',
+        db_column='id_rol',
         db_comment='Identificador único del rol proporcionado por el sistema',
     )
     nombre_rol = models.CharField(
@@ -30,7 +30,7 @@ class Rol(models.Model):
     )
 
     class Meta:
-        db_table = 'Roles'
+        db_table = 'roles'
         ordering = ['nombre_rol']
         verbose_name = 'rol'
         verbose_name_plural = 'roles'

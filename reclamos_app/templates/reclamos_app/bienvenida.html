@@ -1,0 +1,219 @@
+{% extends 'reclamos_app/esqueleto.html' %}
+{% load static %}
+
+{% block titulo %}Bienvenido{% endblock %}
+
+{% block cuerpo %}
+<nav class="navbar navbar-expand-lg nav-publica">
+    <div class="container">
+        <a class="marca" href="{% url 'reclamos_app:bienvenida' %}">
+            <img src="{% static 'reclamos_app/img/logo.svg' %}" alt="">
+            <span class="marca-texto"><strong>Junta de Saneamiento</strong><small>Bella Vista · Itapúa</small></span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navPublica" aria-controls="navPublica" aria-expanded="false" aria-label="Abrir menú">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navPublica">
+            <ul class="navbar-nav mx-auto gap-lg-2">
+                <li class="nav-item"><a class="nav-link" href="#como-funciona">Cómo funciona</a></li>
+                <li class="nav-item"><a class="nav-link" href="#beneficios">Beneficios</a></li>
+                <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
+            </ul>
+            <div class="d-flex flex-column flex-lg-row gap-2 mt-3 mt-lg-0">
+                <a href="{% url 'reclamos_app:ingresar' %}" class="btn btn-outline-light">Iniciar sesión</a>
+                <a href="{% url 'reclamos_app:registro' %}" class="btn btn-light text-primary">Registrarse</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<header class="hero">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6 text-center text-lg-start">
+                <span class="hero-etiqueta mb-4"><i class="bi bi-droplet-half"></i> Atención ciudadana en línea</span>
+                <h1 class="mb-4">Tu reclamo, atendido y en seguimiento en todo momento</h1>
+                <p class="lead mb-5">
+                    Reportá problemas de agua potable y saneamiento en tu barrio, seguí su estado en tiempo real
+                    y recibí avisos sin necesidad de acercarte a la oficina.
+                </p>
+                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start">
+                    <a href="{% url 'reclamos_app:registro' %}" class="btn btn-light btn-lg text-primary px-4">
+                        <i class="bi bi-person-plus me-2"></i>Crear mi cuenta
+                    </a>
+                    <a href="{% url 'reclamos_app:ingresar' %}" class="btn btn-outline-light btn-lg px-4">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Ya tengo cuenta
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-md-block">
+                <div class="hero-ilustracion">
+                    <div class="hero-tarjeta flotar">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="fw-semibold"><i class="bi bi-clipboard-check me-2"></i>Reclamo #1024</span>
+                            <span class="badge rounded-pill text-bg-light text-success"><span class="estado-punto bg-success me-1"></span>Resuelto</span>
+                        </div>
+                        <div class="small opacity-75 mb-2">Pérdida de agua en la vía pública</div>
+                        <div class="progress bg-white bg-opacity-25" style="height: 6px;">
+                            <div class="progress-bar bg-info" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="hero-tarjeta desplazada flotar-lento">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="icono-circulo bg-white bg-opacity-25 text-white"><i class="bi bi-bell"></i></span>
+                            <div>
+                                <div class="fw-semibold">Actualización de estado</div>
+                                <div class="small opacity-75">Tu reclamo pasó a <strong>En proceso</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-tarjeta flotar">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="icono-circulo bg-white bg-opacity-25 text-white"><i class="bi bi-geo-alt"></i></span>
+                            <div>
+                                <div class="fw-semibold">Ubicación registrada</div>
+                                <div class="small opacity-75">Barrio Centro · Bella Vista</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <svg class="hero-olas" viewBox="0 0 1440 110" preserveAspectRatio="none" aria-hidden="true">
+        <path fill="#ffffff" fill-opacity=".25" d="M0,64L60,58.7C120,53,240,43,360,48C480,53,600,75,720,80C840,85,960,75,1080,64C1200,53,1320,43,1380,37.3L1440,32L1440,110L0,110Z"></path>
+        <path fill="#ffffff" d="M0,96L80,90.7C160,85,320,75,480,74.7C640,75,800,85,960,85.3C1120,85,1280,75,1360,69.3L1440,64L1440,110L0,110Z"></path>
+    </svg>
+</header>
+
+<main>
+    <section class="seccion" id="como-funciona">
+        <div class="container">
+            <div class="seccion-titulo">
+                <div class="sobretitulo mb-2">Cómo funciona</div>
+                <h2 class="mb-3">Tres pasos simples</h2>
+                <p class="text-secondary">Desde tu celular o computadora, en cualquier momento del día.</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="paso">
+                        <span class="paso-numero">01</span>
+                        <span class="icono-circulo mb-3"><i class="bi bi-pencil-square"></i></span>
+                        <h5>Registrá tu reclamo</h5>
+                        <p class="text-secondary mb-0">Indicá el tipo de problema, agregá fotos y marcá la ubicación exacta en el mapa.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="paso">
+                        <span class="paso-numero">02</span>
+                        <span class="icono-circulo mb-3"><i class="bi bi-search"></i></span>
+                        <h5>Seguí su estado</h5>
+                        <p class="text-secondary mb-0">Consultá en tiempo real si tu reclamo está pendiente, en proceso o resuelto.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="paso">
+                        <span class="paso-numero">03</span>
+                        <span class="icono-circulo mb-3"><i class="bi bi-check2-circle"></i></span>
+                        <h5>Recibí la solución</h5>
+                        <p class="text-secondary mb-0">Te avisamos por SMS o correo cuando el equipo técnico resuelva el inconveniente.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="seccion bg-light" id="beneficios">
+        <div class="container">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-5">
+                    <div class="sobretitulo text-uppercase fw-semibold small mb-2" style="color: var(--jsbv-secundario); letter-spacing: .08em;">Beneficios</div>
+                    <h2 class="mb-3">Una gestión más ágil y transparente</h2>
+                    <p class="text-secondary mb-4">
+                        El sistema centraliza todos los reclamos, permite asignar responsables y genera informes
+                        para mejorar la calidad del servicio de agua potable y saneamiento.
+                    </p>
+                    <a href="{% url 'reclamos_app:registro' %}" class="btn btn-primary">Comenzar ahora <i class="bi bi-arrow-right ms-1"></i></a>
+                </div>
+                <div class="col-lg-7">
+                    <div class="row g-4">
+                        <div class="col-sm-6">
+                            <div class="caracteristica">
+                                <span class="icono-circulo"><i class="bi bi-clock-history"></i></span>
+                                <div><h6 class="mb-1">Disponible 24/7</h6><p class="text-secondary small mb-0">Sin depender del horario de oficina.</p></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="caracteristica">
+                                <span class="icono-circulo"><i class="bi bi-diagram-3"></i></span>
+                                <div><h6 class="mb-1">Trazabilidad completa</h6><p class="text-secondary small mb-0">Historial de cada reclamo hasta su cierre.</p></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="caracteristica">
+                                <span class="icono-circulo"><i class="bi bi-geo-alt"></i></span>
+                                <div><h6 class="mb-1">Geolocalización</h6><p class="text-secondary small mb-0">Ubicación precisa de cada incidente.</p></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="caracteristica">
+                                <span class="icono-circulo"><i class="bi bi-bar-chart-line"></i></span>
+                                <div><h6 class="mb-1">Reportes e informes</h6><p class="text-secondary small mb-0">Datos para mejores decisiones.</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="seccion">
+        <div class="container">
+            <div class="cta text-center text-md-start">
+                <div class="row align-items-center g-4 position-relative" style="z-index: 1;">
+                    <div class="col-md-8">
+                        <h3 class="mb-2">¿Tenés un problema con el servicio de agua?</h3>
+                        <p class="mb-0 opacity-75">Creá tu cuenta en menos de un minuto y registrá tu primer reclamo.</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <a href="{% url 'reclamos_app:registro' %}" class="btn btn-light btn-lg text-primary">Registrarme</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="pie" id="contacto">
+    <div class="container">
+        <div class="row g-4 mb-4">
+            <div class="col-lg-5">
+                <a class="marca mb-3" href="{% url 'reclamos_app:bienvenida' %}">
+                    <img src="{% static 'reclamos_app/img/logo.svg' %}" alt="">
+                    <span class="marca-texto"><strong>Junta de Saneamiento</strong><small>Bella Vista · Itapúa</small></span>
+                </a>
+                <p class="small mb-0">Trabajamos para brindar un servicio de agua potable y saneamiento de calidad a toda la comunidad.</p>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <h6 class="text-white mb-3">Accesos</h6>
+                <ul class="list-unstyled small d-grid gap-2">
+                    <li><a href="{% url 'reclamos_app:ingresar' %}">Iniciar sesión</a></li>
+                    <li><a href="{% url 'reclamos_app:registro' %}">Crear cuenta</a></li>
+                    <li><a href="{% url 'reclamos_app:recuperar' %}">Recuperar contraseña</a></li>
+                </ul>
+            </div>
+            <div class="col-sm-6 col-lg-4">
+                <h6 class="text-white mb-3">Contacto</h6>
+                <ul class="list-unstyled small d-grid gap-2">
+                    <li><i class="bi bi-geo-alt me-2"></i>Bella Vista, Itapúa - Paraguay</li>
+                    <li><i class="bi bi-building me-2"></i>Oficina de atención al usuario</li>
+                </ul>
+            </div>
+        </div>
+        <div class="border-top border-secondary border-opacity-25 pt-3 small d-flex flex-column flex-md-row justify-content-between gap-2">
+            <span>© {% now "Y" %} Junta de Saneamiento de Bella Vista</span>
+            <span>Proyecto de Grado · UNAE</span>
+        </div>
+    </div>
+</footer>
+{% endblock %}

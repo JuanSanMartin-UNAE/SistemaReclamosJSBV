@@ -51,7 +51,9 @@ El desarrollo sigue una arquitectura web responsiva basada en el siguiente stack
 - [x] Estructura MVC de la aplicación (ver [arquitectura.md](arquitectura.md))
 - [x] Gestión de Barrios, Roles y Usuarios (alta, listado, edición y baja)
 - [x] Panel de administración de Django
-- [ ] Autenticación de usuarios del sistema y permisos por rol
+- [x] Tabla `Usuarios` como modelo de usuario de Django (inicio de sesión con número de documento)
+- [ ] Pantallas de inicio de sesión, registro y recuperación de contraseña
+- [ ] Permisos por rol
 - [ ] Módulo de Reclamos
 - [ ] Notificaciones, geolocalización y reportes
 
@@ -83,7 +85,7 @@ El desarrollo sigue una arquitectura web responsiva basada en el siguiente stack
    ```bash
    docker compose exec web python manage.py migrate
    ```
-5. Crear un usuario administrador:
+5. Crear un usuario administrador (se solicitará número de documento, nombre, apellido, teléfono y contraseña):
    ```bash
    docker compose exec web python manage.py createsuperuser
    ```

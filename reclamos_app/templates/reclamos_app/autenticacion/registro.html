@@ -1,0 +1,48 @@
+{% extends 'reclamos_app/autenticacion/base_autenticacion.html' %}
+
+{% block titulo %}Crear cuenta{% endblock %}
+{% block clase_tarjeta %}ancha{% endblock %}
+
+{% block contenido %}
+<div class="mb-4">
+    <h1 class="h3 mb-1">Crear una cuenta</h1>
+    <p class="text-secondary mb-0">Completá tus datos para registrar y seguir tus reclamos.</p>
+</div>
+
+<form method="post" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger"><i class="bi bi-exclamation-octagon-fill"></i><div>{% for error in form.non_field_errors %}{{ error }}{% endfor %}</div></div>
+    {% endif %}
+
+    <h6 class="text-secondary text-uppercase small fw-semibold mb-3"><i class="bi bi-person me-1"></i>Datos personales</h6>
+    <div class="row g-0 gx-sm-3">
+        <div class="col-sm-6">{% include 'reclamos_app/comun/campo_flotante.html' with campo=form.nombre %}</div>
+        <div class="col-sm-6">{% include 'reclamos_app/comun/campo_flotante.html' with campo=form.apellido %}</div>
+        <div class="col-sm-6">{% include 'reclamos_app/comun/campo_flotante.html' with campo=form.num_documento %}</div>
+        <div class="col-sm-6">{% include 'reclamos_app/comun/campo_flotante.html' with campo=form.telefono %}</div>
+        <div class="col-12">{% include 'reclamos_app/comun/campo_flotante.html' with campo=form.correo_electronico mostrar_ayuda=True %}</div>
+    </div>
+
+    <h6 class="text-secondary text-uppercase small fw-semibold mb-3 mt-2"><i class="bi bi-house me-1"></i>Domicilio</h6>
+    <div class="row g-0 gx-sm-3">
+        <div class="col-sm-5">{% include 'reclamos_app/comun/campo_flotante.html' with campo=form.barrio %}</div>
+        <div class="col-sm-7">{% include 'reclamos_app/comun/campo_flotante.html' with campo=form.direccion %}</div>
+    </div>
+
+    <h6 class="text-secondary text-uppercase small fw-semibold mb-3 mt-2"><i class="bi bi-shield-lock me-1"></i>Seguridad</h6>
+    <div class="row g-0 gx-sm-3">
+        <div class="col-sm-6">{% include 'reclamos_app/comun/campo_flotante.html' with campo=form.password1 %}</div>
+        <div class="col-sm-6">{% include 'reclamos_app/comun/campo_flotante.html' with campo=form.password2 %}</div>
+    </div>
+    <div class="form-text mt-n2 mb-4">{{ form.password1.help_text|safe }}</div>
+
+    <button type="submit" class="btn btn-primary w-100 py-3">
+        <i class="bi bi-person-check me-2"></i>Crear mi cuenta
+    </button>
+</form>
+
+<p class="text-center mt-4 mb-0">
+    ¿Ya tenés cuenta? <a href="{% url 'reclamos_app:ingresar' %}" class="fw-medium">Iniciá sesión</a>
+</p>
+{% endblock %}

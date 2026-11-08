@@ -1,0 +1,13 @@
+Hola {{ user.get_short_name }},
+
+Recibimos una solicitud para restablecer la contraseña de tu cuenta en el Sistema de Reclamos de la Junta de Saneamiento de Bella Vista.
+
+Para crear una nueva contraseña, ingresá al siguiente enlace (válido por 2 horas):
+
+{{ protocol }}://{{ domain }}{% url 'reclamos_app:recuperar_confirmar' uidb64=uid token=token %}
+
+Tu usuario para iniciar sesión es tu número de documento: {{ user.get_username }}
+
+Si no solicitaste este cambio, podés ignorar este mensaje; tu contraseña actual seguirá funcionando.
+
+Junta de Saneamiento de Bella Vista

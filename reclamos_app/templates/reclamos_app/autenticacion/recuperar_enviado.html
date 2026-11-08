@@ -1,0 +1,17 @@
+{% extends 'reclamos_app/autenticacion/base_autenticacion.html' %}
+
+{% block titulo %}Revisá tu correo{% endblock %}
+
+{% block contenido %}
+<div class="text-center">
+    <span class="auth-icono"><i class="bi bi-envelope-check"></i></span>
+    <h1 class="h3 mb-3">Revisá tu correo</h1>
+    <p class="text-secondary">
+        Si el correo ingresado corresponde a una cuenta registrada, recibirás en breve un mensaje con el enlace para crear una nueva contraseña.
+    </p>
+    <p class="text-secondary small mb-4">
+        El enlace es válido por 2 horas. Si no lo ves, revisá la carpeta de correo no deseado.
+    </p>
+    <a href="{% url 'reclamos_app:ingresar' %}" class="btn btn-primary w-100 py-3">Volver a iniciar sesión</a>
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+<div class="mb-3">
+    <div class="form-floating{% if campo.field.widget.input_type == 'password' %} campo-contrasenha{% endif %}">
+        {{ campo }}
+        <label for="{{ campo.id_for_label }}">{{ campo.label }}{% if campo.field.required %} <span class="text-danger">*</span>{% endif %}</label>
+        {% if campo.field.widget.input_type == 'password' %}
+            <button type="button" class="btn-ver" data-ver-contrasenha aria-label="Mostrar contraseña"><i class="bi bi-eye"></i></button>
+        {% endif %}
+    </div>
+    {% for error in campo.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+    {% if campo.help_text and mostrar_ayuda %}<div class="form-text">{{ campo.help_text|safe }}</div>{% endif %}
+</div>

@@ -72,6 +72,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'reclamos.wsgi.application'
 
+AUTH_USER_MODEL = 'reclamos_app.Usuario'
+
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
@@ -94,6 +96,9 @@ DATABASES = {
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'OPTIONS': {
+            'user_attributes': ('num_documento', 'nombre', 'apellido', 'correo_electronico'),
+        },
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
@@ -123,6 +128,25 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+
+
+# Autenticación
+LOGIN_URL = 'reclamos_app:ingresar'
+LOGIN_REDIRECT_URL = 'reclamos_app:panel'
+LOGOUT_REDIRECT_URL = 'reclamos_app:bienvenida'
+PASSWORD_RESET_TIMEOUT = 60 * 60 * 2
+
+
+# Correo electrónico (en desarrollo los correos se muestran en `docker compose logs web`)
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', '1') == '1'
+DEFAULT_FROM_EMAIL = os.environ.get(
+    'DEFAULT_FROM_EMAIL', 'Junta de Saneamiento de Bella Vista <no-responder@juntabellavista.local>'
+)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

@@ -1,0 +1,40 @@
+{% extends 'reclamos_app/base.html' %}
+
+{% block titulo %}Funcionarios{% endblock %}
+{% block titulo_barra %}Funcionarios{% endblock %}
+
+{% block contenido %}
+<div class="encabezado-pagina">
+    <div>
+        <h1>Funcionarios</h1>
+        <p>Personal operativo y administrativo que gestiona los reclamos.</p>
+    </div>
+    <a href="{% url 'reclamos_app:funcionario_crear' %}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Nuevo funcionario</a>
+</div>
+
+<div class="tarjeta overflow-hidden">
+    <table class="table tabla tabla-apilada">
+        <thead>
+            <tr><th>ID</th><th>Nombre</th><th>Cargo</th><th>Carga máxima</th><th>Fecha de alta</th><th class="text-end">Acciones</th></tr>
+        </thead>
+        <tbody>
+            {% for funcionario in funcionarios %}
+            <tr>
+                <td data-etiqueta="ID" class="text-secondary">#{{ funcionario.id_funcionario }}</td>
+                <td data-etiqueta="Nombre" class="fw-medium">{{ funcionario.nombre_apellido }}</td>
+                <td data-etiqueta="Cargo">{{ funcionario.cargo }}</td>
+                <td data-etiqueta="Carga máxima">{{ funcionario.cant_maxima_despachada }}</td>
+                <td data-etiqueta="Fecha de alta">{{ funcionario.fecha_alta|date:"d/m/Y" }}</td>
+                <td class="acciones text-end">
+                    <a href="{% url 'reclamos_app:funcionario_editar' funcionario.pk %}" class="btn btn-sm btn-light" title="Editar"><i class="bi bi-pencil"></i><span class="d-md-none ms-1">Editar</span></a>
+                    <a href="{% url 'reclamos_app:funcionario_eliminar' funcionario.pk %}" class="btn btn-sm btn-light text-danger" title="Eliminar"><i class="bi bi-trash"></i><span class="d-md-none ms-1">Eliminar</span></a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="vacio"><div class="estado-vacio"><i class="bi bi-person-gear"></i>No hay funcionarios registrados.</div></td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% include 'reclamos_app/comun/paginacion.html' %}
+{% endblock %}

@@ -90,6 +90,7 @@ También se incorporarán las carpetas `static/` (archivos CSS, JavaScript e im�
 
 - **Motor:** PostgreSQL 16, ejecutado en un contenedor Docker (servicio `db`).
 - **Base de datos:** `db_reclamos`.
-- **Gestión del esquema:** las tablas se definen como modelos de Django y se crean mediante migraciones (`python manage.py migrate`). Los nombres de tablas y columnas respetan el diseño original (`"Barrios"`, `"Roles"`, `"Usuarios"`, `"Id_barrio"`, etc.) e incluyen los comentarios de cada columna.
+- **Gestión del esquema:** las tablas se definen como modelos de Django y se crean mediante migraciones (`python manage.py migrate`). Los nombres de tablas y columnas están en minúscula (`barrios`, `roles`, `usuarios`, `id_barrio`, etc.) e incluyen los comentarios de cada columna.
 - **Persistencia:** los datos se guardan en el volumen de Docker `postgres_data`.
-- **Credenciales:** se leen de variables de entorno definidas en el archivo `.env`, que no se incluye en el repositorio.
+- **Usuarios y autenticación:** la tabla `usuarios` es el modelo de usuario del sistema (`AUTH_USER_MODEL = 'reclamos_app.Usuario'`). Es la única tabla de usuarios: la usan tanto el inicio de sesión como el panel de administración. Se ingresa con el número de documento, la contraseña se guarda cifrada en la columna `contrasenha` y el rol se asigna mediante `rol_usuario`. Django agrega las columnas `ultimo_acceso`, `es_staff` y `es_superusuario`, y las tablas `usuarios_groups` y `usuarios_user_permissions` para grupos y permisos.
+- **Credenciales de la base de datos:** se leen de variables de entorno definidas en el archivo `.env`, que no se incluye en el repositorio.

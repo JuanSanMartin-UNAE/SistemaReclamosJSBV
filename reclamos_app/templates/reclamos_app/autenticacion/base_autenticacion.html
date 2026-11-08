@@ -1,0 +1,39 @@
+{% extends 'reclamos_app/esqueleto.html' %}
+{% load static %}
+
+{% block cuerpo %}
+<div class="auth">
+    <aside class="auth-lateral">
+        <a class="marca" href="{% url 'reclamos_app:bienvenida' %}">
+            <img src="{% static 'reclamos_app/img/logo.svg' %}" alt="">
+            <span class="marca-texto"><strong>Junta de Saneamiento</strong><small>Bella Vista · Itapúa</small></span>
+        </a>
+        <div>
+            <h2 class="mb-3">Sistema de Atención y Gestión de Reclamos</h2>
+            <p class="opacity-75 mb-4">Reportá, seguí y resolvé los inconvenientes del servicio de agua potable y saneamiento desde un solo lugar.</p>
+            <div class="auth-beneficio"><i class="bi bi-lightning-charge"></i><span>Registro de reclamos en pocos minutos</span></div>
+            <div class="auth-beneficio"><i class="bi bi-broadcast"></i><span>Seguimiento del estado en tiempo real</span></div>
+            <div class="auth-beneficio"><i class="bi bi-shield-check"></i><span>Tus datos protegidos y seguros</span></div>
+        </div>
+        <small class="opacity-50">© {% now "Y" %} Junta de Saneamiento de Bella Vista</small>
+        <svg class="olas" viewBox="0 0 1440 200" preserveAspectRatio="none" aria-hidden="true">
+            <path fill="#ffffff" fill-opacity=".25" d="M0,128L80,117.3C160,107,320,85,480,96C640,107,800,149,960,154.7C1120,160,1280,128,1360,112L1440,96L1440,200L0,200Z"></path>
+        </svg>
+    </aside>
+
+    <div class="flex-grow-1 d-flex flex-column">
+        <div class="auth-encabezado-movil">
+            <a class="marca" href="{% url 'reclamos_app:bienvenida' %}">
+                <img src="{% static 'reclamos_app/img/logo.svg' %}" alt="">
+                <span class="marca-texto"><strong>Junta de Saneamiento</strong><small>Bella Vista · Itapúa</small></span>
+            </a>
+        </div>
+        <main class="auth-principal">
+            <div class="auth-tarjeta {% block clase_tarjeta %}{% endblock %}">
+                {% include 'reclamos_app/comun/mensajes.html' %}
+                {% block contenido %}{% endblock %}
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'reclamos_app/autenticacion/base_autenticacion.html' %}
+
+{% block titulo %}Nueva contraseña{% endblock %}
+
+{% block contenido %}
+{% if validlink %}
+    <div class="text-center mb-4">
+        <span class="auth-icono"><i class="bi bi-shield-lock"></i></span>
+        <h1 class="h3 mb-2">Crear nueva contraseña</h1>
+        <p class="text-secondary mb-0">Elegí una contraseña segura que no uses en otros sitios.</p>
+    </div>
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {% include 'reclamos_app/comun/campo_flotante.html' with campo=form.new_password1 %}
+        {% include 'reclamos_app/comun/campo_flotante.html' with campo=form.new_password2 %}
+        <div class="form-text mt-n2 mb-4">{{ form.new_password1.help_text|safe }}</div>
+        <button type="submit" class="btn btn-primary w-100 py-3">
+            <i class="bi bi-check2-circle me-2"></i>Guardar nueva contraseña
+        </button>
+    </form>
+{% else %}
+    <div class="text-center">
+        <span class="auth-icono text-danger"><i class="bi bi-link-45deg"></i></span>
+        <h1 class="h3 mb-3">Enlace no válido</h1>
+        <p class="text-secondary mb-4">El enlace de recuperación ya fue utilizado o expiró. Solicitá uno nuevo para continuar.</p>
+        <a href="{% url 'reclamos_app:recuperar' %}" class="btn btn-primary w-100 py-3">Solicitar un nuevo enlace</a>
+    </div>
+{% endif %}
+{% endblock %}

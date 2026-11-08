@@ -1,0 +1,38 @@
+{% extends 'reclamos_app/base.html' %}
+
+{% block titulo %}Prioridades{% endblock %}
+{% block titulo_barra %}Prioridades{% endblock %}
+
+{% block contenido %}
+<div class="encabezado-pagina">
+    <div>
+        <h1>Prioridades</h1>
+        <p>Niveles de urgencia asignados a la naturaleza del reclamo.</p>
+    </div>
+    <a href="{% url 'reclamos_app:prioridad_crear' %}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Nueva prioridad</a>
+</div>
+
+<div class="tarjeta overflow-hidden">
+    <table class="table tabla tabla-apilada">
+        <thead>
+            <tr><th>ID</th><th>Nombre</th><th>Fecha de alta</th><th class="text-end">Acciones</th></tr>
+        </thead>
+        <tbody>
+            {% for prioridad in prioridades %}
+            <tr>
+                <td data-etiqueta="ID" class="text-secondary">#{{ prioridad.id_prioridades }}</td>
+                <td data-etiqueta="Nombre" class="fw-medium">{{ prioridad.nombre_prioridad }}</td>
+                <td data-etiqueta="Fecha de alta">{{ prioridad.fecha_alta|date:"d/m/Y" }}</td>
+                <td class="acciones text-end">
+                    <a href="{% url 'reclamos_app:prioridad_editar' prioridad.pk %}" class="btn btn-sm btn-light" title="Editar"><i class="bi bi-pencil"></i><span class="d-md-none ms-1">Editar</span></a>
+                    <a href="{% url 'reclamos_app:prioridad_eliminar' prioridad.pk %}" class="btn btn-sm btn-light text-danger" title="Eliminar"><i class="bi bi-trash"></i><span class="d-md-none ms-1">Eliminar</span></a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="vacio"><div class="estado-vacio"><i class="bi bi-exclamation-triangle"></i>No hay prioridades registradas.</div></td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% include 'reclamos_app/comun/paginacion.html' %}
+{% endblock %}

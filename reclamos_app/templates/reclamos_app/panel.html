@@ -1,0 +1,118 @@
+{% extends 'reclamos_app/base.html' %}
+
+{% block titulo %}Panel{% endblock %}
+{% block titulo_barra %}Panel principal{% endblock %}
+
+{% block contenido %}
+<div class="bienvenida-panel mb-4">
+    <div class="position-relative" style="z-index: 1;">
+        <div class="small opacity-75 mb-1">{% now "l, j \d\e F \d\e Y" %}</div>
+        <h1 class="h3 mb-2">Hola, {{ user.get_short_name }} 👋</h1>
+        <p class="mb-0 opacity-75">
+            {% if user.es_administrador %}Este es el resumen general del sistema de reclamos.{% else %}Desde aquí podrás registrar y seguir tus reclamos.{% endif %}
+        </p>
+    </div>
+</div>
+
+{% if user.es_administrador %}
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-xl-3">
+            <a class="tarjeta estadistica h-100" href="{% url 'reclamos_app:usuario_lista' %}">
+                <span class="icono-circulo"><i class="bi bi-people"></i></span>
+                <div><div class="valor">{{ total_usuarios }}</div><div class="etiqueta">Usuarios</div></div>
+            </a>
+        </div>
+        <div class="col-6 col-xl-3">
+            <div class="tarjeta estadistica h-100">
+                <span class="icono-circulo"><i class="bi bi-person-check"></i></span>
+                <div><div class="valor">{{ usuarios_activos }}</div><div class="etiqueta">Activos</div></div>
+            </div>
+        </div>
+        <div class="col-6 col-xl-3">
+            <a class="tarjeta estadistica h-100" href="{% url 'reclamos_app:barrio_lista' %}">
+                <span class="icono-circulo"><i class="bi bi-geo-alt"></i></span>
+                <div><div class="valor">{{ total_barrios }}</div><div class="etiqueta">Barrios</div></div>
+            </a>
+        </div>
+        <div class="col-6 col-xl-3">
+            <a class="tarjeta estadistica h-100" href="{% url 'reclamos_app:rol_lista' %}">
+                <span class="icono-circulo"><i class="bi bi-person-badge"></i></span>
+                <div><div class="valor">{{ total_roles }}</div><div class="etiqueta">Roles</div></div>
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="tarjeta h-100">
+                <div class="tarjeta-cuerpo d-flex justify-content-between align-items-center pb-0">
+                    <h2 class="h6 mb-0">Últimos usuarios registrados</h2>
+                    <a href="{% url 'reclamos_app:usuario_lista' %}" class="small">Ver todos</a>
+                </div>
+                <div class="table-responsive mt-3">
+                    <table class="table tabla tabla-apilada">
+                        <thead><tr><th>Usuario</th><th>Barrio</th><th>Rol</th><th>Registro</th></tr></thead>
+                        <tbody>
+                            {% for u in ultimos_usuarios %}
+                            <tr>
+                                <td data-etiqueta="Usuario">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="avatar d-none d-md-inline-flex" style="width:2rem;height:2rem;font-size:.75rem;">{{ u.iniciales }}</span>
+                                        <span>{{ u.get_full_name }}</span>
+                                    </div>
+                                </td>
+                                <td data-etiqueta="Barrio">{{ u.barrio|default:"—" }}</td>
+                                <td data-etiqueta="Rol">{{ u.rol|default:"—" }}</td>
+                                <td data-etiqueta="Registro">{{ u.fecha_inicio|date:"d/m/Y" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="4" class="vacio text-center text-secondary">Aún no hay usuarios.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="tarjeta tarjeta-cuerpo h-100">
+                <h2 class="h6 mb-3">Accesos rápidos</h2>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'reclamos_app:usuario_crear' %}" class="btn btn-light text-start"><i class="bi bi-person-plus me-2 text-primary"></i>Usuarios</a>
+                    <a href="{% url 'reclamos_app:barrio_crear' %}" class="btn btn-light text-start"><i class="bi bi-geo-alt me-2 text-primary"></i>Barrios</a>
+                    <a href="{% url 'reclamos_app:rol_crear' %}" class="btn btn-light text-start"><i class="bi bi-person-badge me-2 text-primary"></i>Roles</a>
+                    <a href="{% url 'reclamos_app:cargo_funcionario_crear' %}" class="btn btn-light text-start"><i class="bi bi-person-badge me-2 text-primary"></i>Cargos</a>
+                    <a href="{% url 'reclamos_app:clasificacion_reclamo_crear' %}" class="btn btn-light text-start"><i class="bi bi-tags me-2 text-primary"></i>Clasificaciones</a>
+                    <a href="{% url 'reclamos_app:estado_reclamo_crear' %}" class="btn btn-light text-start"><i class="bi bi-flag me-2 text-primary"></i>Estados</a>
+                    <a href="{% url 'reclamos_app:funcionario_crear' %}" class="btn btn-light text-start"><i class="bi bi-person-plus me-2 text-primary"></i>Funcionarios</a>
+                    <a href="{% url 'reclamos_app:prioridad_crear' %}" class="btn btn-light text-start"><i class="bi bi-star me-2 text-primary"></i>Prioridades</a>
+                    <a href="{% url 'reclamos_app:tipo_reclamo_crear' %}" class="btn btn-light text-start"><i class="bi bi-tags me-2 text-primary"></i>Tipos</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="tarjeta tarjeta-cuerpo h-100">
+                <div class="estado-vacio">
+                    <i class="bi bi-clipboard-plus"></i>
+                    <h2 class="h5 text-body">Mis reclamos</h2>
+                    <p class="mb-0">Muy pronto podrás registrar tus reclamos, adjuntar fotos y seguir su estado desde aquí.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="tarjeta tarjeta-cuerpo h-100">
+                <h2 class="h6 mb-3">Mis datos</h2>
+                <dl class="row small mb-0">
+                    <dt class="col-5 text-secondary fw-medium">Documento</dt><dd class="col-7">{{ user.num_documento }}</dd>
+                    <dt class="col-5 text-secondary fw-medium">Teléfono</dt><dd class="col-7">{{ user.telefono|default:"—" }}</dd>
+                    <dt class="col-5 text-secondary fw-medium">Correo</dt><dd class="col-7 text-break">{{ user.correo_electronico|default:"—" }}</dd>
+                    <dt class="col-5 text-secondary fw-medium">Barrio</dt><dd class="col-7">{{ user.barrio|default:"—" }}</dd>
+                    <dt class="col-5 text-secondary fw-medium">Dirección</dt><dd class="col-7 mb-0">{{ user.direccion|default:"—" }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

@@ -5,7 +5,7 @@ from django.utils import timezone
 class Barrio(models.Model):
     id_barrio = models.AutoField(
         primary_key=True,
-        db_column='Id_barrio',
+        db_column='id_barrio',
         db_comment='Identificador único de barrio proporcionado por el sistema',
     )
     nombre_barrio = models.CharField(
@@ -20,7 +20,7 @@ class Barrio(models.Model):
     )
 
     class Meta:
-        db_table = 'Barrios'
+        db_table = 'barrios'
         ordering = ['nombre_barrio']
         verbose_name = 'barrio'
         verbose_name_plural = 'barrios'

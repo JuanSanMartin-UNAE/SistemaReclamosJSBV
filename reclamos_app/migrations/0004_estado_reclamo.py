@@ -12,8 +12,22 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.SeparateDatabaseAndState(
-            # La tabla ya existe en PostgreSQL; solo sincronizamos el estado de Django.
-            database_operations=[],
+            database_operations=[
+                migrations.RunSQL(
+                    sql="""
+                    CREATE TABLE IF NOT EXISTS estados_reclamos (
+                        id_estado serial PRIMARY KEY,
+                        nombre_estado varchar(50) NOT NULL,
+                        fecha_alta date NOT NULL
+                    );
+                    COMMENT ON TABLE estados_reclamos IS 'Administra el ciclo de vida y los estados por los que atraviesa un incidente reportado';
+                    COMMENT ON COLUMN estados_reclamos.id_estado IS 'Identificador único del estado del reclamo';
+                    COMMENT ON COLUMN estados_reclamos.nombre_estado IS 'Denominación y descripción del estado del reclamo';
+                    COMMENT ON COLUMN estados_reclamos.fecha_alta IS 'Fecha de registro del estado de reclamo';
+                    """,
+                    reverse_sql='DROP TABLE IF EXISTS estados_reclamos;',
+                ),
+            ],
             state_operations=[
                 migrations.CreateModel(
                     name='EstadoReclamo',

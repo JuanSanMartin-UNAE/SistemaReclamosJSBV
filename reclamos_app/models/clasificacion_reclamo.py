@@ -3,29 +3,37 @@ from django.utils import timezone
 
 
 class ClasificacionReclamo(models.Model):
+    """Clasificación general de un reclamo, técnica o comercial."""
+
     id_tipo_reclamo = models.AutoField(
         primary_key=True,
-        db_column='id_tipo_reclamo',
-        db_comment='Identificador único de la clasificación del reclamo',
+        db_column="id_tipo_reclamo",
+        db_comment="Identificador único de la clasificación del reclamo",
     )
     nombre = models.CharField(
         max_length=50,
-        db_comment='Denominación de la clasificación del reclamo',
+        db_comment="Denominación de la clasificación del reclamo",
     )
     fecha_alta = models.DateField(
-        'fecha de alta',
+        "fecha de alta",
         default=timezone.localdate,
-        db_comment='Fecha de registro de la clasificación del reclamo',
+        db_comment="Fecha de registro de la clasificación del reclamo",
     )
 
     class Meta:
-        db_table = 'clasificacion_reclamos'
+        db_table = "clasificacion_reclamos"
         db_table_comment = (
-            'Categorización de reclamos en técnico o comercial conforme al Reglamento de la Ley 1614'
+            "Categorización de reclamos en técnico o comercial "
+            "conforme al Reglamento de la Ley 1614"
         )
-        ordering = ['nombre']
-        verbose_name = 'clasificación de reclamo'
-        verbose_name_plural = 'clasificaciones de reclamo'
+        ordering = ["nombre"]
+        verbose_name = "clasificación de reclamo"
+        verbose_name_plural = "clasificaciones de reclamo"
 
     def __str__(self):
+        """Devuelve el nombre de la clasificación.
+
+        Returns:
+            str: Nombre visible.
+        """
         return self.nombre

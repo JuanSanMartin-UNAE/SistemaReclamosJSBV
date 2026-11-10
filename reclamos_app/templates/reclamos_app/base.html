@@ -3,6 +3,41 @@
 
 {% block cuerpo %}
 {% with ruta=request.resolver_match.url_name %}
+{% if user.is_authenticated and user.es_gestor %}
+<div class="app app-gestion">
+    <header class="gestion-barra">
+        <a class="marca" href="{% url 'reclamos_app:panel' %}">
+            <img src="{% static 'reclamos_app/img/logo.svg' %}" alt="">
+            <span class="marca-texto">
+                <strong>Junta de Saneamiento</strong>
+                <small>Bella Vista</small>
+            </span>
+        </a>
+        <nav class="gestion-pestanas" aria-label="Secciones">
+            <a class="{% if ruta != 'reportes' and ruta != 'configuracion' and 'barrio' not in ruta and 'rol_' not in ruta and 'cargo' not in ruta and 'funcionario' not in ruta and 'clasificacion' not in ruta and 'tipo_reclamo' not in ruta and 'prioridad' not in ruta and 'estado_reclamo' not in ruta and 'usuario_' not in ruta %}activa{% endif %}" href="{% url 'reclamos_app:panel' %}">Reclamos</a>
+            <a class="{% if ruta == 'reportes' %}activa{% endif %}" href="{% url 'reclamos_app:reportes' %}">Reportes</a>
+            <a class="{% if ruta == 'configuracion' or 'barrio' in ruta or 'rol_' in ruta or 'cargo' in ruta or 'funcionario' in ruta or 'clasificacion' in ruta or 'tipo_reclamo' in ruta or 'prioridad' in ruta or 'estado_reclamo' in ruta or 'usuario_' in ruta %}activa{% endif %}" href="{% url 'reclamos_app:configuracion' %}">Configuración</a>
+        </nav>
+        <div class="dropdown">
+            <button class="btn btn-light gestion-usuario" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="avatar">{{ user.iniciales }}</span>
+                <span class="d-none d-sm-inline">{{ user.get_short_name }}</span>
+                <i class="bi bi-chevron-down"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                <li><h6 class="dropdown-header">{{ user.get_full_name }}<br><small class="fw-normal">{{ user.rol|default:"Sin rol" }}</small></h6></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url 'reclamos_app:perfil' %}"><i class="bi bi-person me-2"></i>Mi perfil</a></li>
+                <li>
+                    <form method="post" action="{% url 'reclamos_app:salir' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </header>
+{% else %}
 <div class="app">
     <aside class="app-lateral offcanvas-lg offcanvas-start" tabindex="-1" id="menuLateral" aria-labelledby="menuLateralTitulo">
         <div class="offcanvas-header">
@@ -16,6 +51,8 @@
             <nav class="flex-grow-1">
                 <div class="menu-titulo">Principal</div>
                 <a class="menu-enlace {% if ruta == 'panel' %}activo{% endif %}" href="{% url 'reclamos_app:panel' %}"><i class="bi bi-grid-1x2"></i>Panel</a>
+                <a class="menu-enlace {% if ruta == 'perfil' %}activo{% endif %}" href="{% url 'reclamos_app:perfil' %}"><i class="bi bi-person"></i>Mi perfil</a>
+                <a class="menu-enlace {% if ruta|slice:":8" == "reclamo_" or ruta|slice:":16" == "reconsideracion_" %}activo{% endif %}" href="{% url 'reclamos_app:reclamo_lista' %}"><i class="bi bi-droplet"></i>{% if user.es_administrador %}Reclamos{% else %}Mis reclamos{% endif %}</a>
 
                 {% if user.es_administrador %}
                     <div class="menu-titulo">Gestión</div>
@@ -55,6 +92,9 @@
             <button class="btn btn-light btn-icono d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#menuLateral" aria-controls="menuLateral" aria-label="Abrir menú">
                 <i class="bi bi-list fs-5"></i>
             </button>
+            <a class="btn {% if ruta == 'panel' %}btn-primary{% else %}btn-light{% endif %} d-inline-flex align-items-center gap-2" href="{% url 'reclamos_app:panel' %}" {% if ruta == 'panel' %}aria-current="page"{% endif %}>
+                <i class="bi bi-house-door"></i><span class="d-none d-sm-inline">Inicio</span>
+            </a>
             <div class="fw-semibold text-truncate titulo-fuente">{% block titulo_barra %}Panel{% endblock %}</div>
             <div class="ms-auto dropdown">
                 <button class="btn btn-light d-flex align-items-center gap-2 py-1 px-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -65,6 +105,7 @@
                 <ul class="dropdown-menu dropdown-menu-end shadow border-0">
                     <li><h6 class="dropdown-header">{{ user.get_full_name }}<br><small class="fw-normal">Doc. {{ user.num_documento }}</small></h6></li>
                     <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{% url 'reclamos_app:perfil' %}"><i class="bi bi-person me-2"></i>Mi perfil</a></li>
                     <li>
                         <form method="post" action="{% url 'reclamos_app:salir' %}">
                             {% csrf_token %}
@@ -74,12 +115,14 @@
                 </ul>
             </div>
         </header>
-
+{% endif %}
         <main class="app-contenido">
             {% include 'reclamos_app/comun/mensajes.html' %}
             {% block contenido %}{% endblock %}
         </main>
+    {% if not user.is_authenticated or not user.es_gestor %}
     </div>
+    {% endif %}
 </div>
 {% endwith %}
 {% endblock %}

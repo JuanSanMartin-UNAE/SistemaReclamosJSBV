@@ -13,8 +13,38 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.SeparateDatabaseAndState(
-            # Las tablas ya existen en PostgreSQL; solo sincronizamos el estado de Django.
-            database_operations=[],
+            # CREATE IF NOT EXISTS: seguro en producción (tablas ya existentes) y en BD de prueba.
+            database_operations=[
+                migrations.RunSQL(
+                    sql="""
+                    CREATE TABLE IF NOT EXISTS clasificacion_reclamos (
+                        id_tipo_reclamo serial PRIMARY KEY,
+                        nombre varchar(50) NOT NULL,
+                        fecha_alta date NOT NULL
+                    );
+                    COMMENT ON TABLE clasificacion_reclamos IS 'Categorización de reclamos en técnico o comercial conforme al Reglamento de la Ley 1614';
+                    COMMENT ON COLUMN clasificacion_reclamos.id_tipo_reclamo IS 'Identificador único de la clasificación del reclamo';
+                    COMMENT ON COLUMN clasificacion_reclamos.nombre IS 'Denominación de la clasificación del reclamo';
+                    COMMENT ON COLUMN clasificacion_reclamos.fecha_alta IS 'Fecha de registro de la clasificación del reclamo';
+
+                    CREATE TABLE IF NOT EXISTS cargos_funcionarios (
+                        id_cargo serial PRIMARY KEY,
+                        nombre_cargo varchar(50) NOT NULL,
+                        id_clase_reclamo_atiende integer NOT NULL REFERENCES clasificacion_reclamos(id_tipo_reclamo) ON DELETE RESTRICT,
+                        fecha_alta date NOT NULL
+                    );
+                    COMMENT ON TABLE cargos_funcionarios IS 'Almacena la denominación de los cargos de los operadores y funcionarios de la Junta';
+                    COMMENT ON COLUMN cargos_funcionarios.id_cargo IS 'Identificador único del cargo del funcionario';
+                    COMMENT ON COLUMN cargos_funcionarios.nombre_cargo IS 'Descripción o denominación del cargo institucional';
+                    COMMENT ON COLUMN cargos_funcionarios.id_clase_reclamo_atiende IS 'Clasificación de reclamos que el cargo está habilitado para atender';
+                    COMMENT ON COLUMN cargos_funcionarios.fecha_alta IS 'Fecha de registro del cargo institucional';
+                    """,
+                    reverse_sql="""
+                    DROP TABLE IF EXISTS cargos_funcionarios;
+                    DROP TABLE IF EXISTS clasificacion_reclamos;
+                    """,
+                ),
+            ],
             state_operations=[
                 migrations.CreateModel(
                     name='ClasificacionReclamo',

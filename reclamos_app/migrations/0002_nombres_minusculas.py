@@ -1,95 +1,64 @@
-import django.db.models.deletion
-import django.utils.timezone
-from django.db import migrations, models
+from django.db import migrations
 
 
 class Migration(migrations.Migration):
+    """
+    Histórica: en entornos antiguos renombraba tablas PascalCase → minúscula.
+    El estado final ya quedó en 0001_initial; aquí solo se renombran si aún existen
+    las tablas/columnas con mayúscula (producción legada). En BD de prueba es no-op.
+    """
 
     dependencies = [
         ('reclamos_app', '0001_initial'),
     ]
 
     operations = [
-        migrations.SeparateDatabaseAndState(
-            # Las tablas principales ya existen en minúscula en PostgreSQL.
-            # Solo renombramos las tablas M2M creadas por Django con mayúscula.
-            database_operations=[
-                migrations.RunSQL(
-                    sql='ALTER TABLE IF EXISTS "Usuarios_groups" RENAME TO usuarios_groups;',
-                    reverse_sql='ALTER TABLE IF EXISTS usuarios_groups RENAME TO "Usuarios_groups";',
-                ),
-                migrations.RunSQL(
-                    sql='ALTER TABLE IF EXISTS "Usuarios_user_permissions" RENAME TO usuarios_user_permissions;',
-                    reverse_sql='ALTER TABLE IF EXISTS usuarios_user_permissions RENAME TO "Usuarios_user_permissions";',
-                ),
-            ],
-            state_operations=[
-                migrations.AlterModelTable(name='barrio', table='barrios'),
-                migrations.AlterModelTable(name='rol', table='roles'),
-                migrations.AlterModelTable(name='usuario', table='usuarios'),
-                migrations.AlterField(
-                    model_name='barrio',
-                    name='id_barrio',
-                    field=models.AutoField(
-                        db_column='id_barrio',
-                        db_comment='Identificador único de barrio proporcionado por el sistema',
-                        primary_key=True,
-                        serialize=False,
-                    ),
-                ),
-                migrations.AlterField(
-                    model_name='rol',
-                    name='id_rol',
-                    field=models.AutoField(
-                        db_column='id_rol',
-                        db_comment='Identificador único del rol proporcionado por el sistema',
-                        primary_key=True,
-                        serialize=False,
-                    ),
-                ),
-                migrations.AlterField(
-                    model_name='usuario',
-                    name='id_usuario',
-                    field=models.AutoField(
-                        db_column='id_usuario',
-                        db_comment='Identificador único del usuario proporcionado por el sistema',
-                        primary_key=True,
-                        serialize=False,
-                    ),
-                ),
-                migrations.AlterField(
-                    model_name='usuario',
-                    name='barrio',
-                    field=models.ForeignKey(
-                        blank=True,
-                        db_column='id_barrio',
-                        db_comment='Número de barrio asignado/escogido proporcionado por el sistema',
-                        null=True,
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name='usuarios',
-                        to='reclamos_app.barrio',
-                    ),
-                ),
-                migrations.AlterField(
-                    model_name='usuario',
-                    name='correo_electronico',
-                    field=models.EmailField(
-                        blank=True,
-                        db_comment='Correo del usuario',
-                        default='',
-                        max_length=150,
-                        verbose_name='correo electrónico',
-                    ),
-                ),
-                migrations.AlterField(
-                    model_name='usuario',
-                    name='fecha_inicio',
-                    field=models.DateField(
-                        db_comment='Fecha en que se registra el usuario',
-                        default=django.utils.timezone.localdate,
-                        verbose_name='fecha de registro',
-                    ),
-                ),
-            ],
+        migrations.RunSQL(
+            sql="""
+            DO $$
+            BEGIN
+                IF to_regclass('public."Barrios"') IS NOT NULL THEN
+                    ALTER TABLE "Barrios" RENAME TO barrios;
+                END IF;
+                IF to_regclass('public."Roles"') IS NOT NULL THEN
+                    ALTER TABLE "Roles" RENAME TO roles;
+                END IF;
+                IF to_regclass('public."Usuarios"') IS NOT NULL THEN
+                    ALTER TABLE "Usuarios" RENAME TO usuarios;
+                END IF;
+                IF to_regclass('public."Usuarios_groups"') IS NOT NULL THEN
+                    ALTER TABLE "Usuarios_groups" RENAME TO usuarios_groups;
+                END IF;
+                IF to_regclass('public."Usuarios_user_permissions"') IS NOT NULL THEN
+                    ALTER TABLE "Usuarios_user_permissions" RENAME TO usuarios_user_permissions;
+                END IF;
+
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = 'public' AND table_name = 'barrios' AND column_name = 'Id_barrio'
+                ) THEN
+                    ALTER TABLE barrios RENAME COLUMN "Id_barrio" TO id_barrio;
+                END IF;
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = 'public' AND table_name = 'roles' AND column_name = 'Id_rol'
+                ) THEN
+                    ALTER TABLE roles RENAME COLUMN "Id_rol" TO id_rol;
+                END IF;
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = 'public' AND table_name = 'usuarios' AND column_name = 'Id_usuario'
+                ) THEN
+                    ALTER TABLE usuarios RENAME COLUMN "Id_usuario" TO id_usuario;
+                END IF;
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = 'public' AND table_name = 'usuarios' AND column_name = 'Id_barrio'
+                ) THEN
+                    ALTER TABLE usuarios RENAME COLUMN "Id_barrio" TO id_barrio;
+                END IF;
+            END $$;
+            """,
+            reverse_sql=migrations.RunSQL.noop,
         ),
     ]

@@ -1,3 +1,8 @@
 Django>=5.2,<6.0
 psycopg[binary]>=3.2
 coverage>=7.0
+pytest>=8.3
+pytest-django>=4.9
+pytest-cov>=6.0
+flake8>=7.1
+black>=25.1

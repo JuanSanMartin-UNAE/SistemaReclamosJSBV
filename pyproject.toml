@@ -1,0 +1,25 @@
+[tool.black]
+line-length = 88
+target-version = ["py314"]
+extend-exclude = '''
+/(
+  | migrations
+)/
+'''
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "reclamos.settings"
+python_files = ["tests.py", "test_*.py"]
+addopts = "--cov=reclamos --cov=reclamos_app --cov-report=term-missing --cov-fail-under=80"
+
+[tool.coverage.run]
+source = ["reclamos", "reclamos_app"]
+omit = [
+    "*/migrations/*",
+    "manage.py",
+    "*/tests.py",
+    "*/test_*.py",
+]
+
+[tool.coverage.report]
+show_missing = true

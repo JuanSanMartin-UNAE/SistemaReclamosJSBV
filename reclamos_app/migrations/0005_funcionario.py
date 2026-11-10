@@ -14,8 +14,26 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.SeparateDatabaseAndState(
-            # La tabla ya existe en PostgreSQL; solo sincronizamos el estado de Django.
-            database_operations=[],
+            database_operations=[
+                migrations.RunSQL(
+                    sql="""
+                    CREATE TABLE IF NOT EXISTS funcionarios (
+                        id_funcionario serial PRIMARY KEY,
+                        nombre_apellido varchar(50) NOT NULL,
+                        id_cargo_funcionario integer NOT NULL REFERENCES cargos_funcionarios(id_cargo) ON DELETE RESTRICT,
+                        cant_maxima_despachada integer NOT NULL,
+                        fecha_alta date NOT NULL
+                    );
+                    COMMENT ON TABLE funcionarios IS 'Almacena los datos del personal operativo y administrativo que gestiona los incidentes';
+                    COMMENT ON COLUMN funcionarios.id_funcionario IS 'Identificador único del funcionario de la Junta';
+                    COMMENT ON COLUMN funcionarios.nombre_apellido IS 'Nombre y apellido del funcionario';
+                    COMMENT ON COLUMN funcionarios.id_cargo_funcionario IS 'Cargo institucional asignado al funcionario';
+                    COMMENT ON COLUMN funcionarios.cant_maxima_despachada IS 'Límite máximo de incidentes activos que el funcionario puede tener asignados simultáneamente';
+                    COMMENT ON COLUMN funcionarios.fecha_alta IS 'Fecha de alta del funcionario en el sistema';
+                    """,
+                    reverse_sql='DROP TABLE IF EXISTS funcionarios;',
+                ),
+            ],
             state_operations=[
                 migrations.CreateModel(
                     name='Funcionario',

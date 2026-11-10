@@ -3,27 +3,34 @@ from django.utils import timezone
 
 
 class Barrio(models.Model):
+    """Barrio atendido por la Junta de Saneamiento."""
+
     id_barrio = models.AutoField(
         primary_key=True,
-        db_column='id_barrio',
-        db_comment='Identificador único de barrio proporcionado por el sistema',
+        db_column="id_barrio",
+        db_comment="Identificador único de barrio proporcionado por el sistema",
     )
     nombre_barrio = models.CharField(
-        'nombre del barrio',
+        "nombre del barrio",
         max_length=50,
-        db_comment='Nombre del barrio',
+        db_comment="Nombre del barrio",
     )
     fecha_alta = models.DateField(
-        'fecha de alta',
+        "fecha de alta",
         default=timezone.localdate,
-        db_comment='Fecha de registro del barrio',
+        db_comment="Fecha de registro del barrio",
     )
 
     class Meta:
-        db_table = 'barrios'
-        ordering = ['nombre_barrio']
-        verbose_name = 'barrio'
-        verbose_name_plural = 'barrios'
+        db_table = "barrios"
+        ordering = ["nombre_barrio"]
+        verbose_name = "barrio"
+        verbose_name_plural = "barrios"
 
     def __str__(self):
+        """Devuelve el nombre del barrio.
+
+        Returns:
+            str: Nombre visible.
+        """
         return self.nombre_barrio

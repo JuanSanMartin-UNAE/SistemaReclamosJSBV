@@ -13,3 +13,7 @@ backups/
 
 # Archivos subidos por usuarios
 media/
+
+.cursor/
+.coverage
+htmlcov/

@@ -1,0 +1,30 @@
+{% extends 'reclamos_app/base.html' %}
+
+{% block titulo %}Configuración{% endblock %}
+{% block titulo_barra %}Configuración{% endblock %}
+
+{% block contenido %}
+<div class="encabezado-pagina">
+    <div>
+        <h1>Configuración</h1>
+        <p>Catálogos del sistema de reclamos.</p>
+    </div>
+</div>
+{% if user.es_administrador %}
+<div class="row g-3">
+    <div class="col-6 col-md-4 col-xl-3"><a class="tarjeta estadistica h-100" href="{% url 'reclamos_app:usuario_lista' %}"><span class="icono-circulo"><i class="bi bi-people"></i></span><div><div class="etiqueta">Usuarios</div></div></a></div>
+    <div class="col-6 col-md-4 col-xl-3"><a class="tarjeta estadistica h-100" href="{% url 'reclamos_app:rol_lista' %}"><span class="icono-circulo"><i class="bi bi-person-badge"></i></span><div><div class="etiqueta">Roles</div></div></a></div>
+    <div class="col-6 col-md-4 col-xl-3"><a class="tarjeta estadistica h-100" href="{% url 'reclamos_app:barrio_lista' %}"><span class="icono-circulo"><i class="bi bi-geo-alt"></i></span><div><div class="etiqueta">Barrios</div></div></a></div>
+    <div class="col-6 col-md-4 col-xl-3"><a class="tarjeta estadistica h-100" href="{% url 'reclamos_app:funcionario_lista' %}"><span class="icono-circulo"><i class="bi bi-person-gear"></i></span><div><div class="etiqueta">Funcionarios</div></div></a></div>
+    <div class="col-6 col-md-4 col-xl-3"><a class="tarjeta estadistica h-100" href="{% url 'reclamos_app:cargo_funcionario_lista' %}"><span class="icono-circulo"><i class="bi bi-briefcase"></i></span><div><div class="etiqueta">Cargos</div></div></a></div>
+    <div class="col-6 col-md-4 col-xl-3"><a class="tarjeta estadistica h-100" href="{% url 'reclamos_app:clasificacion_reclamo_lista' %}"><span class="icono-circulo"><i class="bi bi-tags"></i></span><div><div class="etiqueta">Clasificaciones</div></div></a></div>
+    <div class="col-6 col-md-4 col-xl-3"><a class="tarjeta estadistica h-100" href="{% url 'reclamos_app:tipo_reclamo_lista' %}"><span class="icono-circulo"><i class="bi bi-list-check"></i></span><div><div class="etiqueta">Tipos</div></div></a></div>
+    <div class="col-6 col-md-4 col-xl-3"><a class="tarjeta estadistica h-100" href="{% url 'reclamos_app:estado_reclamo_lista' %}"><span class="icono-circulo"><i class="bi bi-flag"></i></span><div><div class="etiqueta">Estados</div></div></a></div>
+    <div class="col-6 col-md-4 col-xl-3"><a class="tarjeta estadistica h-100" href="{% url 'reclamos_app:prioridad_lista' %}"><span class="icono-circulo"><i class="bi bi-exclamation-triangle"></i></span><div><div class="etiqueta">Prioridades</div></div></a></div>
+</div>
+{% else %}
+<div class="tarjeta tarjeta-cuerpo">
+    <p class="mb-0">La configuración de catálogos corresponde al administrador del sistema. Desde Reclamos podés filtrar, consultar y gestionar cada caso.</p>
+</div>
+{% endif %}
+{% endblock %}

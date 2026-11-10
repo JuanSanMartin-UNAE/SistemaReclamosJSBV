@@ -1,0 +1,57 @@
+{% extends 'reclamos_app/base.html' %}
+
+{% block titulo %}Reportes{% endblock %}
+{% block titulo_barra %}Reportes{% endblock %}
+
+{% block contenido %}
+<div class="encabezado-pagina">
+    <div>
+        <h1>Reportes</h1>
+        <p>Distribución de los reclamos registrados.</p>
+    </div>
+</div>
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="tarjeta overflow-hidden h-100">
+            <div class="tarjeta-cuerpo pb-0"><h2 class="h6 mb-0">Por estado</h2></div>
+            <table class="table tabla mb-0">
+                <tbody>
+                    {% for fila in por_estado %}
+                    <tr><td>{{ fila.estado__nombre_estado }}</td><td class="text-end fw-semibold">{{ fila.total }}</td></tr>
+                    {% empty %}
+                    <tr><td class="text-secondary">Sin reclamos.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="tarjeta overflow-hidden h-100">
+            <div class="tarjeta-cuerpo pb-0"><h2 class="h6 mb-0">Por barrio</h2></div>
+            <table class="table tabla mb-0">
+                <tbody>
+                    {% for fila in por_barrio %}
+                    <tr><td>{{ fila.barrio__nombre_barrio }}</td><td class="text-end fw-semibold">{{ fila.total }}</td></tr>
+                    {% empty %}
+                    <tr><td class="text-secondary">Sin reclamos.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="tarjeta overflow-hidden h-100">
+            <div class="tarjeta-cuerpo pb-0"><h2 class="h6 mb-0">Por tipo</h2></div>
+            <table class="table tabla mb-0">
+                <tbody>
+                    {% for fila in por_tipo %}
+                    <tr><td>{{ fila.tipo__reclamo }}</td><td class="text-end fw-semibold">{{ fila.total }}</td></tr>
+                    {% empty %}
+                    <tr><td class="text-secondary">Sin reclamos.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

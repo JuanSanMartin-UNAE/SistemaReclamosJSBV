@@ -1,0 +1,176 @@
+{% extends 'reclamos_app/base.html' %}
+
+{% block titulo %}Reclamos{% endblock %}
+{% block titulo_barra %}Reclamos{% endblock %}
+
+{% block contenido %}
+<div class="escritorio">
+<div class="kpis">
+    <div class="tarjeta kpi">
+        <span class="kpi-icono"><i class="bi bi-chat-left-text"></i></span>
+        <div>
+            <div class="kpi-etiqueta">Total reclamos</div>
+            <div class="kpi-valor">{{ total_reclamos }}</div>
+        </div>
+    </div>
+    <div class="tarjeta kpi">
+        <span class="kpi-icono"><i class="bi bi-exclamation-diamond"></i></span>
+        <div>
+            <div class="kpi-etiqueta">Pendientes</div>
+            <div class="kpi-valor">{{ total_pendientes }}</div>
+        </div>
+    </div>
+    <div class="tarjeta kpi">
+        <span class="kpi-icono"><i class="bi bi-clock"></i></span>
+        <div>
+            <div class="kpi-etiqueta">En proceso</div>
+            <div class="kpi-valor">{{ total_en_proceso }}</div>
+        </div>
+    </div>
+    <div class="tarjeta kpi">
+        <span class="kpi-icono"><i class="bi bi-check-circle"></i></span>
+        <div>
+            <div class="kpi-etiqueta">Resueltos</div>
+            <div class="kpi-valor">{{ total_resueltos }}</div>
+        </div>
+    </div>
+</div>
+
+<form method="get" class="tarjeta filtro-gestion mb-3">
+    <div class="filtro-grilla">
+        <div>
+            <label class="form-label" for="filtro-desde">Desde</label>
+            <input class="form-control" id="filtro-desde" type="date" name="desde" value="{{ desde }}">
+        </div>
+        <div>
+            <label class="form-label" for="filtro-hasta">Hasta</label>
+            <input class="form-control" id="filtro-hasta" type="date" name="hasta" value="{{ hasta }}">
+        </div>
+        <div class="campo-ancho">
+            <label class="form-label" for="filtro-barrio">Barrio</label>
+            <select class="form-select" id="filtro-barrio" name="barrio">
+                <option value="">Todos</option>
+                {% for barrio in barrios %}
+                    <option value="{{ barrio.pk }}" {% if barrio_id == barrio.pk|stringformat:"s" %}selected{% endif %}>{{ barrio }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="campo-ancho">
+            <label class="form-label" for="filtro-estado">Estado</label>
+            <select class="form-select" id="filtro-estado" name="estado">
+                <option value="">Todos</option>
+                {% for estado in estados %}
+                    <option value="{{ estado.pk }}" {% if estado_id == estado.pk|stringformat:"s" %}selected{% endif %}>{{ estado }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="filtro-accion">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+            <a class="btn btn-outline-primary" href="{% url 'reclamos_app:reclamo_crear' %}">Agregar reclamo</a>
+        </div>
+    </div>
+</form>
+
+<div class="escritorio-cuerpo">
+    <div>
+        <div class="tarjeta overflow-hidden">
+            <div class="table-responsive">
+                <table class="table tabla tabla-gestion mb-0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Tipo</th>
+                            <th>Barrio</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reclamo in reclamos %}
+                        <tr>
+                            <td data-etiqueta="ID"><a href="{% url 'reclamos_app:reclamo_detalle' reclamo.pk %}">{{ reclamo.pk }}</a></td>
+                            <td data-etiqueta="Usuario">{{ reclamo.titular.get_full_name|default:"—" }}</td>
+                            <td data-etiqueta="Tipo">{{ reclamo.tipo }}</td>
+                            <td data-etiqueta="Barrio">{{ reclamo.barrio }}</td>
+                            <td data-etiqueta="Fecha">{{ reclamo.fecha_hora|date:"d/m/Y" }}</td>
+                            <td data-etiqueta="Estado"><span class="badge {{ reclamo.clase_estado }}">{{ reclamo.estado }}</span></td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="vacio">
+                                <div class="estado-vacio"><i class="bi bi-inbox"></i>No hay reclamos para ese filtro.</div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if is_paginated %}
+            <nav class="d-flex justify-content-center py-3" aria-label="Paginación">
+                <ul class="pagination mb-0">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?{{ consulta_filtros }}&page={{ page_obj.previous_page_number }}">Anterior</a></li>
+                    {% endif %}
+                    <li class="page-item disabled"><span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
+                    {% if page_obj.has_next %}
+                        <li class="page-item"><a class="page-link" href="?{{ consulta_filtros }}&page={{ page_obj.next_page_number }}">Siguiente</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+    <div class="tarjeta mapa-tarjeta">
+        <div id="mapa-gestion"
+             data-centro-lat="{{ centro_lat }}"
+             data-centro-lng="{{ centro_lng }}">
+            {% if not maps_key %}
+            <p class="mapa-aviso">El mapa se carga con la clave <code>GOOGLE_MAPS_API_KEY</code>.</p>
+            {% endif %}
+        </div>
+        <p class="mapa-nota">Los reclamos sin coordenadas no se marcan en el mapa.</p>
+    </div>
+</div>
+</div>
+{{ puntos|json_script:"puntos-mapa" }}
+{% if maps_key %}
+<script>
+    window.iniciarMapaGestion = function () {
+        const contenedor = document.getElementById("mapa-gestion");
+        const puntos = JSON.parse(document.getElementById("puntos-mapa").textContent);
+        const centro = {
+            lat: parseFloat(contenedor.dataset.centroLat),
+            lng: parseFloat(contenedor.dataset.centroLng)
+        };
+        const mapa = new google.maps.Map(contenedor, {
+            center: centro,
+            zoom: 13,
+            mapTypeControl: false,
+            streetViewControl: false
+        });
+        const info = new google.maps.InfoWindow();
+        const limites = new google.maps.LatLngBounds();
+        puntos.forEach(function (punto) {
+            const posicion = {lat: punto.lat, lng: punto.lng};
+            const marca = new google.maps.Marker({map: mapa, position: posicion, title: punto.titulo});
+            const enlace = document.createElement("a");
+            enlace.href = punto.url;
+            enlace.textContent = punto.titulo;
+            marca.addListener("click", function () {
+                info.setContent(enlace);
+                info.open(mapa, marca);
+            });
+            limites.extend(posicion);
+        });
+        if (puntos.length === 1) {
+            mapa.setCenter(limites.getCenter());
+            mapa.setZoom(16);
+        } else if (puntos.length > 1) {
+            mapa.fitBounds(limites, 40);
+        }
+    };
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ maps_key }}&callback=iniciarMapaGestion" async defer></script>
+{% endif %}
+{% endblock %}

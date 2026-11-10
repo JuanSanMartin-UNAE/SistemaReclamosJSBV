@@ -1,0 +1,54 @@
+{% extends 'reclamos_app/base.html' %}
+
+{% block titulo %}{% if user.es_gestor %}Reclamos{% else %}Mis reclamos{% endif %}{% endblock %}
+{% block titulo_barra %}{% if user.es_gestor %}Reclamos{% else %}Mis reclamos{% endif %}{% endblock %}
+
+{% block contenido %}
+<div class="encabezado-pagina">
+    <div>
+        <h1>{% if user.es_gestor %}Reclamos{% else %}Mis reclamos{% endif %}</h1>
+        <p>Reclamos domiciliarios y de la vía pública.</p>
+    </div>
+    <a href="{% url 'reclamos_app:reclamo_crear' %}" class="btn btn-primary"><i class="bi bi-geo-alt me-1"></i>Registrar reclamo</a>
+</div>
+
+<div class="tarjeta overflow-hidden">
+    <table class="table tabla tabla-apilada">
+        <thead>
+            <tr>
+                <th>N.º</th>
+                {% if user.es_gestor %}<th>Titular</th>{% endif %}
+                <th>Motivo</th>
+                <th>Barrio</th>
+                <th>Estado</th>
+                <th>Registro</th>
+                <th class="text-end">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for reclamo in reclamos %}
+            <tr>
+                <td data-etiqueta="N.º" class="text-secondary">#{{ reclamo.num_reclamo }}</td>
+                {% if user.es_gestor %}
+                    <td data-etiqueta="Titular">{{ reclamo.titular.get_full_name|default:"—" }}</td>
+                {% endif %}
+                <td data-etiqueta="Motivo" class="fw-medium">{{ reclamo.tipo }}</td>
+                <td data-etiqueta="Barrio">{{ reclamo.barrio }}</td>
+                <td data-etiqueta="Estado"><span class="badge {{ reclamo.clase_estado }}">{{ reclamo.estado }}</span></td>
+                <td data-etiqueta="Registro">{{ reclamo.fecha_hora|date:"d/m/Y H:i" }}</td>
+                <td class="acciones text-end">
+                    <a href="{% url 'reclamos_app:reclamo_detalle' reclamo.pk %}" class="btn btn-sm btn-light" title="Ver"><i class="bi bi-eye"></i><span class="d-md-none ms-1">Ver</span></a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="{% if user.es_gestor %}7{% else %}6{% endif %}" class="vacio">
+                    <div class="estado-vacio"><i class="bi bi-droplet"></i>No hay reclamos registrados.</div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% include 'reclamos_app/comun/paginacion.html' %}
+{% endblock %}

@@ -14,8 +14,39 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.SeparateDatabaseAndState(
-            # Las tablas ya existen en PostgreSQL; solo sincronizamos el estado de Django.
-            database_operations=[],
+            database_operations=[
+                migrations.RunSQL(
+                    sql="""
+                    CREATE TABLE IF NOT EXISTS prioridades (
+                        id_prioridades serial PRIMARY KEY,
+                        nombre_prioridad varchar(20) NOT NULL,
+                        fecha_alta date NOT NULL
+                    );
+                    COMMENT ON TABLE prioridades IS 'Registra los niveles de urgencia o prioridad asignados a la naturaleza del reclamo';
+                    COMMENT ON COLUMN prioridades.id_prioridades IS 'Identificador único del nivel de prioridad';
+                    COMMENT ON COLUMN prioridades.nombre_prioridad IS 'Descripción de la prioridad establecida (Ej. Alta, Media, Baja)';
+                    COMMENT ON COLUMN prioridades.fecha_alta IS 'Fecha de registro de la prioridad';
+
+                    CREATE TABLE IF NOT EXISTS tipos_reclamos (
+                        id_tipo_reclamo serial PRIMARY KEY,
+                        id_clase_reclamo integer NOT NULL REFERENCES clasificacion_reclamos(id_tipo_reclamo) ON DELETE RESTRICT,
+                        reclamo varchar(100) NOT NULL,
+                        plazo_dias integer NOT NULL,
+                        fecha_alta date NOT NULL
+                    );
+                    COMMENT ON TABLE tipos_reclamos IS 'Catálogo de reclamos específicos según su índole técnico o comercial y sus plazos de respuesta';
+                    COMMENT ON COLUMN tipos_reclamos.id_tipo_reclamo IS 'Identificador único del tipo de reclamo específico';
+                    COMMENT ON COLUMN tipos_reclamos.id_clase_reclamo IS 'Clasificación general a la que pertenece el tipo de reclamo';
+                    COMMENT ON COLUMN tipos_reclamos.reclamo IS 'Descripción del motivo de reclamo preestablecido';
+                    COMMENT ON COLUMN tipos_reclamos.plazo_dias IS 'Plazo máximo establecido en días para dar solución o respuesta al reclamo';
+                    COMMENT ON COLUMN tipos_reclamos.fecha_alta IS 'Fecha de registro del tipo de reclamo';
+                    """,
+                    reverse_sql="""
+                    DROP TABLE IF EXISTS tipos_reclamos;
+                    DROP TABLE IF EXISTS prioridades;
+                    """,
+                ),
+            ],
             state_operations=[
                 migrations.CreateModel(
                     name='Prioridad',

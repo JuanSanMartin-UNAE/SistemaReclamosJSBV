@@ -10,6 +10,9 @@
   * Mantener timeout de inactividad de sesión a 10 minutos (RNF-01).
 - Calidad (Quality Spec):
   * Guía PEP 8 obligatoria (flake8 y black).
+  * Documentación de código: Exclusivamente mediante Docstrings bajo PEP 257 (formato Google Style) para clases, funciones y vistas (Args, Returns, Raises). Prohibido sobre-comentar con '#' lógica evidente.
+  * Nomenclaturas: Clases en PascalCase, funciones/métodos/variables en snake_case, constantes en UPPER_SNAKE_CASE.
+  * Manejo de excepciones: Bloques try-except específicos con respuestas HTTP normalizadas y logging.
   * Modelos y Clases en PascalCase, funciones/variables en snake_case.
   * Manejo explícito de excepciones (try/except específico) y logging.
   * Cobertura de pruebas mínima de 80% con pytest-django.

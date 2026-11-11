@@ -1,25 +1,22 @@
-"""Panel del usuario externo y escritorio de gestión."""
-
-import logging
-from datetime import datetime
-
-from django.conf import settings
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
-from django.db.models import Count
-from django.shortcuts import redirect, render
-from django.urls import reverse
+from django.shortcuts import render
 
+<<<<<<< Updated upstream
+from ..models import Barrio, Rol, Usuario
+=======
 from ..constantes_reclamo import (
     CENTRO_LATITUD,
     CENTRO_LONGITUD,
     ESTADO_EN_PROCESO,
     ESTADO_PENDIENTE,
     ESTADO_RESUELTO,
+    LATITUD_MAXIMA,
+    LATITUD_MINIMA,
+    LONGITUD_MAXIMA,
+    LONGITUD_MINIMA,
 )
 from ..models import Barrio, EstadoReclamo, Reclamo
-from ..reglas import reclamos_del_titular
+from ..reglas import coordenadas_en_bella_vista, reclamos_del_titular
 
 logger = logging.getLogger(__name__)
 POR_PAGINA = 12
@@ -68,10 +65,23 @@ def _exigir_gestor(request):
         return None
     messages.error(request, "No tiene permisos para acceder a esa sección.")
     return redirect("reclamos_app:panel")
+>>>>>>> Stashed changes
 
 
 @login_required
 def panel(request):
+<<<<<<< Updated upstream
+    contexto = {}
+    if request.user.es_administrador:
+        contexto.update({
+            'total_barrios': Barrio.objects.count(),
+            'total_roles': Rol.objects.count(),
+            'total_usuarios': Usuario.objects.count(),
+            'usuarios_activos': Usuario.objects.filter(is_active=True).count(),
+            'ultimos_usuarios': Usuario.objects.select_related('barrio', 'rol').order_by('-fecha_inicio')[:5],
+        })
+    return render(request, 'reclamos_app/panel.html', contexto)
+=======
     """Muestra el escritorio de gestión o el panel del usuario externo.
 
     Args:
@@ -94,6 +104,9 @@ def panel(request):
 
 def _escritorio(request):
     """Arma el tablero de reclamos con filtros, tabla y mapa.
+
+    El mapa omite los reclamos resueltos y los que no tienen un punto
+    dentro de Bella Vista.
 
     Args:
         request: Petición de un gestor.
@@ -130,15 +143,23 @@ def _escritorio(request):
         estado_id = ""
     paginador = Paginator(consulta, POR_PAGINA)
     pagina = paginador.get_page(request.GET.get("page"))
-    puntos = [
-        {
-            "lat": float(reclamo.latitud),
-            "lng": float(reclamo.longitud),
-            "titulo": f"#{reclamo.pk} · {reclamo.tipo}",
-            "url": reverse("reclamos_app:reclamo_detalle", args=[reclamo.pk]),
-        }
-        for reclamo in consulta.exclude(latitud=None).exclude(longitud=None)[:300]
-    ]
+    puntos = []
+    marcados = (
+        consulta.exclude(latitud=None)
+        .exclude(longitud=None)
+        .exclude(estado__nombre_estado__iexact=ESTADO_RESUELTO)
+    )
+    for reclamo in marcados[:300]:
+        if not coordenadas_en_bella_vista(reclamo.latitud, reclamo.longitud):
+            continue
+        puntos.append(
+            {
+                "lat": float(reclamo.latitud),
+                "lng": float(reclamo.longitud),
+                "titulo": f"#{reclamo.pk} · {reclamo.tipo}",
+                "url": reverse("reclamos_app:reclamo_detalle", args=[reclamo.pk]),
+            }
+        )
     parametros = request.GET.copy()
     parametros.pop("page", None)
     contexto = {
@@ -159,6 +180,10 @@ def _escritorio(request):
         "puntos": puntos,
         "centro_lat": str(CENTRO_LATITUD),
         "centro_lng": str(CENTRO_LONGITUD),
+        "lat_min": str(LATITUD_MINIMA),
+        "lat_max": str(LATITUD_MAXIMA),
+        "lng_min": str(LONGITUD_MINIMA),
+        "lng_max": str(LONGITUD_MAXIMA),
         "maps_key": settings.GOOGLE_MAPS_API_KEY,
     }
     return render(request, "reclamos_app/escritorio.html", contexto)
@@ -211,3 +236,4 @@ def configuracion(request):
     if bloqueo is not None:
         return bloqueo
     return render(request, "reclamos_app/configuracion.html")
+>>>>>>> Stashed changes

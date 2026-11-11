@@ -318,7 +318,9 @@ class ReclamoDetalle(LoginRequiredMixin, DetailView):
             reconsideracion = None
         contexto["reconsideracion"] = reconsideracion
         contexto["puede_editar"] = reclamo.puede_editar(self.request.user)
-        contexto["admite_reconsideracion"] = reclamo.admite_reconsideracion()
+        contexto["admite_reconsideracion"] = (
+            self.request.user.es_externo and reclamo.admite_reconsideracion()
+        )
         contexto["puede_resolver"] = (
             self.request.user.es_gestor
             and reconsideracion is not None
@@ -523,11 +525,17 @@ class ReconsideracionCrear(_ReclamoRelacionadoMixin, CreateView):
     mensaje_exito = "Recibimos tu pedido de reconsideración."
 
     def _bloquear_si_no_admite(self):
-        """Impide el pedido cuando el reclamo no está en condiciones.
+        """Impide el pedido si el rol o el estado no corresponden.
 
         Returns:
             HttpResponse | None: Redirección al detalle, o None si se puede pedir.
         """
+        if not self.request.user.es_externo:
+            messages.error(
+                self.request,
+                "La reconsideración solo puede pedirla un usuario externo.",
+            )
+            return redirect("reclamos_app:reclamo_detalle", pk=self.reclamo.pk)
         if self.reclamo.admite_reconsideracion():
             return None
         messages.error(

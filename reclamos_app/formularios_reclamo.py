@@ -226,6 +226,8 @@ class ReclamoForm(EstiloBootstrapMixin, forms.ModelForm):
                 "Elegí un tipo que pertenezca a la categoría.",
             )
         if datos.get("posee_conexion"):
+            datos["latitud"] = None
+            datos["longitud"] = None
             if not datos.get("numero_medidor"):
                 self.add_error(
                     "numero_medidor",

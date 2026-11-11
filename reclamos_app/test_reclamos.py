@@ -35,7 +35,7 @@ class FlujoReclamoTest(TestCase):
     def setUp(self):
         """Prepara usuarios, un barrio y el catálogo mínimo del flujo."""
         rol_admin = Rol.objects.create(nombre_rol="Administrador", fecha_alta=FECHA)
-        rol_usuario = Rol.objects.create(nombre_rol="Usuario", fecha_alta=FECHA)
+        rol_usuario = Rol.objects.create(nombre_rol="USUARIO EXTERNO", fecha_alta=FECHA)
         self.barrio = Barrio.objects.create(nombre_barrio="Centro", fecha_alta=FECHA)
         self.admin = Usuario.objects.create_superuser(
             num_documento="8100001",
@@ -169,11 +169,19 @@ class FlujoReclamoTest(TestCase):
             )
             alta = self.client.post(
                 "/reclamos/nuevo/",
-                self._datos(posee_conexion="on", numero_medidor="12A", foto=foto),
+                self._datos(
+                    posee_conexion="on",
+                    numero_medidor="12A",
+                    foto=foto,
+                    latitud="-27.03450000",
+                    longitud="-55.53980000",
+                ),
             )
         reclamo = Reclamo.objects.get()
         self.assertRedirects(alta, f"/reclamos/{reclamo.pk}/")
         self.assertTrue(reclamo.posee_conexion)
+        self.assertIsNone(reclamo.latitud)
+        self.assertIsNone(reclamo.longitud)
         self.assertEqual(reclamo.conexion.numero_medidor, "12A")
         self.assertTrue(reclamo.foto_evidencia)
         self.assertEqual(str(reclamo), f"Reclamo {reclamo.pk} — {self.tipo}")
@@ -214,8 +222,10 @@ class FlujoReclamoTest(TestCase):
         panel_admin = self.client.get("/panel/")
         self.assertContains(panel_admin, "Total reclamos")
         self.assertContains(panel_admin, "Nora Perez")
-        self.assertContains(panel_admin, "GOOGLE_MAPS_API_KEY")
-        self.assertNotContains(panel_admin, "leaflet")
+        with override_settings(GOOGLE_MAPS_API_KEY=""):
+            sin_clave = self.client.get("/panel/")
+        self.assertContains(sin_clave, "GOOGLE_MAPS_API_KEY")
+        self.assertNotContains(sin_clave, "leaflet")
         with override_settings(GOOGLE_MAPS_API_KEY="clave-prueba"):
             self.assertContains(
                 self.client.get("/panel/"),
@@ -245,6 +255,22 @@ class FlujoReclamoTest(TestCase):
         reclamo.estado = self.resuelto
         reclamo.save(update_fields=["estado"])
         self.assertTrue(reclamo.esta_cerrado())
+        self.assertTrue(self.comun.es_externo)
+        self.assertFalse(self.admin.es_externo)
+        ficha = self.client.get(f"/reclamos/{reclamo.pk}/")
+        self.assertContains(ficha, "Pedir reconsideración")
+        self.client.force_login(self.admin)
+        ficha_admin = self.client.get(f"/reclamos/{reclamo.pk}/")
+        self.assertNotContains(ficha_admin, "Pedir reconsideración")
+        self.assertContains(ficha_admin, "usuario externo")
+        bloqueado = self.client.post(
+            f"/reclamos/{reclamo.pk}/reconsiderar/",
+            {"descargo": MOTIVO},
+            follow=True,
+        )
+        self.assertContains(bloqueado, "usuario externo")
+        self.assertEqual(Reconsideracion.objects.count(), 0)
+        self.client.force_login(self.comun)
         self.assertEqual(
             self.client.get(f"/reclamos/{reclamo.pk}/editar/").status_code,
             302,
@@ -393,6 +419,17 @@ class FlujoReclamoTest(TestCase):
         detalle = self.client.get(f"/reclamos/{reclamo.pk}/")
         self.assertContains(detalle, "Vía pública, sin conexión")
         self.assertContains(detalle, reclamo.num_reclamo)
+        self.client.force_login(self.admin)
+        self.assertContains(
+            self.client.get("/panel/"),
+            f'"lat": {float(reclamo.latitud)}',
+        )
+        reclamo.estado = self.resuelto
+        reclamo.save(update_fields=["estado"])
+        resuelto = self.client.get("/panel/")
+        self.assertNotContains(resuelto, f'"lat": {float(reclamo.latitud)}')
+        self.assertContains(resuelto, "Nora Perez")
+        self.assertContains(resuelto, ">Resuelto<")
         self.client.force_login(self.otro)
         self.assertEqual(self.client.get(f"/reclamos/{reclamo.pk}/").status_code, 404)
 

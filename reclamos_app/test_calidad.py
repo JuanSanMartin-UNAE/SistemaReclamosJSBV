@@ -317,7 +317,7 @@ class CalidadFormulariosYSesionTest(TestCase):
 
     def setUp(self):
         """Crea el rol de registro y una cuenta para ingresar."""
-        self.rol = Rol.objects.create(nombre_rol="Usuario", fecha_alta=FECHA)
+        self.rol = Rol.objects.create(nombre_rol="USUARIO EXTERNO", fecha_alta=FECHA)
         self.barrio = Barrio.objects.create(nombre_barrio="Itapua", fecha_alta=FECHA)
         self.usuario = Usuario.objects.create_user(
             num_documento="7000001",
@@ -347,11 +347,12 @@ class CalidadFormulariosYSesionTest(TestCase):
         return datos
 
     def test_registro_crea_la_cuenta_e_inicia_sesion(self):
-        """Un registro válido entra al panel con el rol Usuario."""
+        """Un registro válido entra al panel con el rol USUARIO EXTERNO."""
         respuesta = self.client.post("/registro/", self._datos_registro())
         self.assertRedirects(respuesta, "/panel/")
         cuenta = Usuario.objects.get(num_documento="7000002")
         self.assertEqual(cuenta.rol, self.rol)
+        self.assertTrue(cuenta.es_externo)
         self.assertTrue(cuenta.check_password("Password2026!"))
 
     def test_registro_rechaza_correo_y_claves_invalidas(self):
@@ -456,3 +457,28 @@ class CalidadFormulariosYSesionTest(TestCase):
         os.environ["BANDERA_QA"] = "   "
         self.assertFalse(_bandera_entorno("BANDERA_QA", False))
         del os.environ["BANDERA_QA"]
+
+
+class RegistroCiudadanoTest(TestCase):
+    """El alta pública asigna siempre el rol de ciudadano."""
+
+    def test_registro_crea_el_rol_externo_si_no_esta_en_el_catalogo(self):
+        """Sin el rol en el catálogo, el registro lo crea y se lo da al ciudadano."""
+        barrio = Barrio.objects.create(nombre_barrio="Costa", fecha_alta=FECHA)
+        datos = {
+            "num_documento": "7000099",
+            "nombre": "Lia",
+            "apellido": "Vera",
+            "telefono": "0981777888",
+            "correo_electronico": "lia@example.com",
+            "direccion": "Calle 9",
+            "barrio": barrio.pk,
+            "password1": "Password2026!",
+            "password2": "Password2026!",
+        }
+        with self.assertLogs("reclamos_app.models.usuario", level="INFO"):
+            respuesta = self.client.post("/registro/", datos)
+        self.assertRedirects(respuesta, "/panel/")
+        cuenta = Usuario.objects.get(num_documento="7000099")
+        self.assertEqual(cuenta.rol.nombre_rol, "USUARIO EXTERNO")
+        self.assertTrue(cuenta.es_externo)

@@ -100,11 +100,7 @@
         </div>
     </form>
 </div>
-<<<<<<< HEAD
-<style>#map { min-height: 320px; background: #f4f7f5; }</style>
-=======
 <style>#map { height: 320px; background: #f4f7f5; }</style>
->>>>>>> feature/HU-02-registro-reclamos
 <script>
 (function () {
     const categoria = document.getElementById("id_categoria");
@@ -160,11 +156,6 @@
         boton.disabled = !(base && modalidad);
     }
 
-<<<<<<< HEAD
-    function mostrarModalidad() {
-        document.getElementById("bloque-medidor").hidden = !domicilio.checked;
-        document.getElementById("bloque-mapa").hidden = domicilio.checked;
-=======
     let mapaGoogle = null;
 
     function mostrarModalidad() {
@@ -177,7 +168,6 @@
                 lng: parseFloat(longitud.value) || parseFloat(mapa.dataset.centroLng)
             });
         }
->>>>>>> feature/HU-02-registro-reclamos
         revisarEnvio();
     }
 
@@ -196,11 +186,7 @@
             {lat: latMin, lng: lngMin},
             {lat: latMax, lng: lngMax}
         );
-<<<<<<< HEAD
-        const mapaGoogle = new google.maps.Map(mapa, {
-=======
         mapaGoogle = new google.maps.Map(mapa, {
->>>>>>> feature/HU-02-registro-reclamos
             center: centro,
             zoom: 14,
             restriction: {latLngBounds: limites, strictBounds: true},

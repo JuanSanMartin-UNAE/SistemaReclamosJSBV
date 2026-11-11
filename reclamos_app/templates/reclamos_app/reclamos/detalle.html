@@ -78,11 +78,8 @@
             {% elif admite_reconsideracion %}
                 <p class="text-secondary">Si la respuesta no resolvió la intermitencia, podés pedir que se revise el cierre. Cada reclamo admite una sola reconsideración.</p>
                 <a href="{% url 'reclamos_app:reconsideracion_crear' reclamo.pk %}" class="btn btn-primary"><i class="bi bi-arrow-repeat me-1"></i>Pedir reconsideración</a>
-<<<<<<< HEAD
-=======
             {% elif reclamo.esta_cerrado %}
                 <p class="text-secondary mb-0">La reconsideración solo puede pedirla un usuario externo.</p>
->>>>>>> feature/HU-02-registro-reclamos
             {% else %}
                 <p class="text-secondary mb-0">La reconsideración se habilita cuando el reclamo queda resuelto o rechazado.</p>
             {% endif %}

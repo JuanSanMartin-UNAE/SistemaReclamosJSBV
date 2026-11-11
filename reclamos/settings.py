@@ -26,7 +26,12 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-solo-desarroll
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', '0') == '1'
 
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost 127.0.0.1 [::1]').split()
+_hosts = os.environ.get(
+    'DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1,web,0.0.0.0'
+)
+ALLOWED_HOSTS = [
+    host.strip() for host in _hosts.replace(' ', ',').split(',') if host.strip()
+]
 
 
 # Application definition
@@ -136,6 +141,11 @@ LOGIN_REDIRECT_URL = 'reclamos_app:panel'
 LOGOUT_REDIRECT_URL = 'reclamos_app:bienvenida'
 PASSWORD_RESET_TIMEOUT = 60 * 60 * 2
 
+# RNF-01: la sesión cierra tras 10 minutos sin actividad.
+SESSION_COOKIE_AGE = 600
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 
 # Correo electrónico (en desarrollo los correos se muestran en `docker compose logs web`)
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
@@ -148,14 +158,10 @@ DEFAULT_FROM_EMAIL = os.environ.get(
     'DEFAULT_FROM_EMAIL', 'Junta de Saneamiento de Bella Vista <no-responder@juntabellavista.local>'
 )
 
-=======
-# ==============================================================================
-# CONFIGURACIÓN DE CLAVE PRIMARIA
-# ==============================================================================
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+# Default primary key field type
+# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
-# ==============================================================================
-# GOOGLE MAPS API (ISO 27001 - Inyección desde entorno)
-# ==============================================================================
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Mapa de Google para reclamos de la vía pública.
 GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY', '')
->>>>>>> Stashed changes

@@ -89,11 +89,6 @@ class RegistroForm(EstiloBootstrapMixin, forms.ModelForm):
                 self.add_error('password2', error)
 
     def save(self, commit=True):
-<<<<<<< Updated upstream
-        usuario = super().save(commit=False)
-        usuario.set_password(self.cleaned_data['password1'])
-        usuario.rol = Rol.objects.filter(nombre_rol='Usuario').first()
-=======
         """Guarda el ciudadano con la contraseña hasheada y el rol USUARIO EXTERNO.
 
         Args:
@@ -103,9 +98,8 @@ class RegistroForm(EstiloBootstrapMixin, forms.ModelForm):
             Usuario: Cuenta creada.
         """
         usuario = super().save(commit=False)
-        usuario.set_password(self.cleaned_data["password1"])
+        usuario.set_password(self.cleaned_data['password1'])
         usuario.rol = obtener_rol_externo()
->>>>>>> Stashed changes
         if commit:
             usuario.save()
         return usuario
@@ -188,6 +182,66 @@ class TipoReclamoForm(EstiloBootstrapMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['clase_reclamo'].empty_label = 'Seleccione la clasificación'
+
+
+class PerfilUsuarioForm(EstiloBootstrapMixin, forms.ModelForm):
+    """Edición del perfil del usuario autenticado, sin cambiar el documento."""
+
+    class Meta:
+        """Datos que el titular puede actualizar."""
+
+        model = Usuario
+        fields = [
+            "num_documento",
+            "nombre",
+            "apellido",
+            "telefono",
+            "correo_electronico",
+            "barrio",
+            "direccion",
+        ]
+        widgets = {"direccion": forms.TextInput()}
+
+    def __init__(self, *args, **kwargs):
+        """Bloquea el número de documento y exige el correo.
+
+        Args:
+            *args: Argumentos del formulario.
+            **kwargs: Argumentos con nombre del formulario.
+        """
+        super().__init__(*args, **kwargs)
+        self.fields["num_documento"].disabled = True
+        self.fields["num_documento"].help_text = (
+            "El número de documento no se puede modificar."
+        )
+        self.fields["correo_electronico"].required = True
+
+    def clean_num_documento(self):
+        """Conserva el documento guardado aunque el envío intente cambiarlo.
+
+        Returns:
+            str: Número de documento actual de la cuenta.
+        """
+        return self.instance.num_documento
+
+    def clean_correo_electronico(self):
+        """Rechaza un correo que ya usa otra cuenta.
+
+        Returns:
+            str: Correo normalizado en minúsculas.
+
+        Raises:
+            ValidationError: Si el correo pertenece a otro usuario.
+        """
+        correo = self.cleaned_data["correo_electronico"].lower()
+        duplicado = Usuario.objects.filter(correo_electronico__iexact=correo).exclude(
+            pk=self.instance.pk
+        )
+        if duplicado.exists():
+            raise ValidationError(
+                "Ya existe una cuenta registrada con este correo electrónico.",
+            )
+        return correo
 
 
 class UsuarioForm(EstiloBootstrapMixin, forms.ModelForm):

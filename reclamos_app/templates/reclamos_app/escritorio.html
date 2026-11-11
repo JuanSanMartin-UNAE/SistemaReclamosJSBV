@@ -124,24 +124,16 @@
     <div class="tarjeta mapa-tarjeta">
         <div id="mapa-gestion"
              data-centro-lat="{{ centro_lat }}"
-<<<<<<< HEAD
-             data-centro-lng="{{ centro_lng }}">
-=======
              data-centro-lng="{{ centro_lng }}"
              data-lat-min="{{ lat_min }}"
              data-lat-max="{{ lat_max }}"
              data-lng-min="{{ lng_min }}"
              data-lng-max="{{ lng_max }}">
->>>>>>> feature/HU-02-registro-reclamos
             {% if not maps_key %}
             <p class="mapa-aviso">El mapa se carga con la clave <code>GOOGLE_MAPS_API_KEY</code>.</p>
             {% endif %}
         </div>
-<<<<<<< HEAD
-        <p class="mapa-nota">Los reclamos sin coordenadas no se marcan en el mapa.</p>
-=======
         <p class="mapa-nota">Los reclamos resueltos y los que no tienen coordenadas no se marcan en el mapa.</p>
->>>>>>> feature/HU-02-registro-reclamos
     </div>
 </div>
 </div>
@@ -155,11 +147,6 @@
             lat: parseFloat(contenedor.dataset.centroLat),
             lng: parseFloat(contenedor.dataset.centroLng)
         };
-<<<<<<< HEAD
-        const mapa = new google.maps.Map(contenedor, {
-            center: centro,
-            zoom: 13,
-=======
         const limitesDistrito = new google.maps.LatLngBounds(
             {
                 lat: parseFloat(contenedor.dataset.latMin),
@@ -174,7 +161,6 @@
             center: centro,
             zoom: 13,
             restriction: {latLngBounds: limitesDistrito, strictBounds: true},
->>>>>>> feature/HU-02-registro-reclamos
             mapTypeControl: false,
             streetViewControl: false
         });

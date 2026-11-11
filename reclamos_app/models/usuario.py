@@ -11,12 +11,6 @@ from django.utils import timezone
 from .barrio import Barrio
 from .rol import Rol
 
-<<<<<<< HEAD
-logger = logging.getLogger(__name__)
-
-=======
-<<<<<<< Updated upstream
-=======
 logger = logging.getLogger(__name__)
 
 ROL_USUARIO_EXTERNO = "USUARIO EXTERNO"
@@ -34,9 +28,6 @@ def obtener_rol_externo():
     rol = Rol.objects.create(nombre_rol=ROL_USUARIO_EXTERNO)
     logger.info("Se creó el rol %s.", ROL_USUARIO_EXTERNO)
     return rol
-
->>>>>>> Stashed changes
->>>>>>> feature/HU-02-registro-reclamos
 
 class UsuarioManager(BaseUserManager):
     """Crea usuarios del sistema con la contraseña hasheada."""
@@ -262,14 +253,6 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
         """
         if self.is_superuser or self.is_staff:
             return True
-<<<<<<< HEAD
-        return self._nombre_rol() == "administrador"
-
-    @property
-=======
-<<<<<<< Updated upstream
-        return bool(self.rol_id) and self.rol.nombre_rol == 'Administrador'
-=======
         return self._nombre_rol() == "administrador"
 
     @property
@@ -282,7 +265,6 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
         return self._nombre_rol() == ROL_USUARIO_EXTERNO.casefold()
 
     @property
->>>>>>> feature/HU-02-registro-reclamos
     def es_administrativo(self):
         """Indica si el usuario es el interno que gestiona reclamos.
 
@@ -299,7 +281,3 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
             bool: True para el administrador del sistema o el interno administrativo.
         """
         return self.es_administrador or self.es_administrativo
-<<<<<<< HEAD
-=======
->>>>>>> Stashed changes
->>>>>>> feature/HU-02-registro-reclamos

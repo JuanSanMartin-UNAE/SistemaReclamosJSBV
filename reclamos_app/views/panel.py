@@ -1,9 +1,16 @@
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+"""Panel del usuario externo y escritorio de gestión."""
 
-<<<<<<< Updated upstream
-from ..models import Barrio, Rol, Usuario
-=======
+import logging
+from datetime import datetime
+
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.db.models import Count
+from django.shortcuts import redirect, render
+from django.urls import reverse
+
 from ..constantes_reclamo import (
     CENTRO_LATITUD,
     CENTRO_LONGITUD,
@@ -65,23 +72,10 @@ def _exigir_gestor(request):
         return None
     messages.error(request, "No tiene permisos para acceder a esa sección.")
     return redirect("reclamos_app:panel")
->>>>>>> Stashed changes
 
 
 @login_required
 def panel(request):
-<<<<<<< Updated upstream
-    contexto = {}
-    if request.user.es_administrador:
-        contexto.update({
-            'total_barrios': Barrio.objects.count(),
-            'total_roles': Rol.objects.count(),
-            'total_usuarios': Usuario.objects.count(),
-            'usuarios_activos': Usuario.objects.filter(is_active=True).count(),
-            'ultimos_usuarios': Usuario.objects.select_related('barrio', 'rol').order_by('-fecha_inicio')[:5],
-        })
-    return render(request, 'reclamos_app/panel.html', contexto)
-=======
     """Muestra el escritorio de gestión o el panel del usuario externo.
 
     Args:
@@ -236,4 +230,3 @@ def configuracion(request):
     if bloqueo is not None:
         return bloqueo
     return render(request, "reclamos_app/configuracion.html")
->>>>>>> Stashed changes

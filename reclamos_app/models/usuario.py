@@ -5,6 +5,27 @@ from django.utils import timezone
 from .barrio import Barrio
 from .rol import Rol
 
+<<<<<<< Updated upstream
+=======
+logger = logging.getLogger(__name__)
+
+ROL_USUARIO_EXTERNO = "USUARIO EXTERNO"
+
+
+def obtener_rol_externo():
+    """Devuelve el rol del ciudadano y lo crea si todavía no existe.
+
+    Returns:
+        Rol: Rol USUARIO EXTERNO ya cargado en el catálogo.
+    """
+    rol = Rol.objects.filter(nombre_rol__iexact=ROL_USUARIO_EXTERNO).first()
+    if rol is not None:
+        return rol
+    rol = Rol.objects.create(nombre_rol=ROL_USUARIO_EXTERNO)
+    logger.info("Se creó el rol %s.", ROL_USUARIO_EXTERNO)
+    return rol
+
+>>>>>>> Stashed changes
 
 class UsuarioManager(BaseUserManager):
     use_in_migrations = True
@@ -154,4 +175,35 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     def es_administrador(self):
         if self.is_superuser or self.is_staff:
             return True
+<<<<<<< Updated upstream
         return bool(self.rol_id) and self.rol.nombre_rol == 'Administrador'
+=======
+        return self._nombre_rol() == "administrador"
+
+    @property
+    def es_externo(self):
+        """Indica si el usuario es el beneficiario externo.
+
+        Returns:
+            bool: True cuando el rol es USUARIO EXTERNO.
+        """
+        return self._nombre_rol() == ROL_USUARIO_EXTERNO.casefold()
+
+    @property
+    def es_administrativo(self):
+        """Indica si el usuario es el interno que gestiona reclamos.
+
+        Returns:
+            bool: True cuando el rol es USUARIO INTERNO ADMINISTRATIVO.
+        """
+        return self._nombre_rol() == "usuario interno administrativo"
+
+    @property
+    def es_gestor(self):
+        """Indica si al ingresar corresponde el escritorio de gestión.
+
+        Returns:
+            bool: True para el administrador del sistema o el interno administrativo.
+        """
+        return self.es_administrador or self.es_administrativo
+>>>>>>> Stashed changes

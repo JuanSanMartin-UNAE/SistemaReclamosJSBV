@@ -1,0 +1,109 @@
+{% extends 'reclamos_app/base.html' %}
+{% load static %}
+
+{% block titulo %}Reclamo #{{ reclamo.num_reclamo }}{% endblock %}
+{% block titulo_barra %}Reclamo #{{ reclamo.num_reclamo }}{% endblock %}
+
+{% block contenido %}
+<div class="encabezado-pagina">
+    <div class="d-flex align-items-center gap-3">
+        <span class="icono-circulo"><i class="bi bi-droplet"></i></span>
+        <div>
+            <h1>Reclamo #{{ reclamo.num_reclamo }}</h1>
+            <p class="mb-0">{{ reclamo.tipo }} · {{ reclamo.fecha_hora|date:"d/m/Y H:i" }}</p>
+        </div>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        <a href="{% url 'reclamos_app:reclamo_lista' %}" class="btn btn-light">Volver</a>
+        {% if puede_editar %}
+            <a href="{% url 'reclamos_app:reclamo_editar' reclamo.pk %}" class="btn btn-light"><i class="bi bi-pencil me-1"></i>Editar</a>
+        {% endif %}
+        {% if user.es_gestor %}
+            <a href="{% url 'reclamos_app:reclamo_gestionar' reclamo.pk %}" class="btn btn-primary"><i class="bi bi-clipboard-check me-1"></i>Gestionar</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="tarjeta tarjeta-cuerpo h-100">
+            <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                <h2 class="h6 mb-0">Reclamo</h2>
+                <span class="badge {{ reclamo.clase_estado }}">{{ reclamo.estado }}</span>
+            </div>
+            <dl class="row small mb-0">
+                {% if user.es_gestor %}
+                    <dt class="col-sm-4 text-secondary fw-medium">Titular</dt>
+                    <dd class="col-sm-8">{{ reclamo.titular.get_full_name|default:"—" }}</dd>
+                {% endif %}
+                <dt class="col-sm-4 text-secondary fw-medium">Barrio</dt>
+                <dd class="col-sm-8">{{ reclamo.barrio }}</dd>
+                <dt class="col-sm-4 text-secondary fw-medium">Conexión</dt>
+                <dd class="col-sm-8">
+                    {% if reclamo.posee_conexion %}
+                        Medidor {{ reclamo.conexion.numero_medidor }}
+                    {% else %}
+                        Vía pública, sin conexión
+                    {% endif %}
+                </dd>
+                <dt class="col-sm-4 text-secondary fw-medium">Prioridad</dt>
+                <dd class="col-sm-8">{{ reclamo.prioridad }}</dd>
+                <dt class="col-sm-4 text-secondary fw-medium">Funcionario</dt>
+                <dd class="col-sm-8">{{ reclamo.funcionario|default:"Sin asignar" }}</dd>
+                <dt class="col-sm-4 text-secondary fw-medium">Ubicación</dt>
+                <dd class="col-sm-8">
+                    {% if reclamo.latitud and reclamo.longitud %}
+                        {{ reclamo.latitud }}, {{ reclamo.longitud }}
+                    {% else %}
+                        Sin coordenadas
+                    {% endif %}
+                </dd>
+                <dt class="col-sm-4 text-secondary fw-medium">Descripción</dt>
+                <dd class="col-sm-8 mb-0">{{ reclamo.descripcion|linebreaksbr }}</dd>
+            </dl>
+            {% if reclamo.foto_evidencia %}
+                <img class="img-fluid rounded mt-3" src="{% get_media_prefix %}{{ reclamo.foto_evidencia }}" alt="Evidencia del reclamo">
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="tarjeta tarjeta-cuerpo h-100">
+            <h2 class="h6 mb-3">Reconsideración</h2>
+            {% if reconsideracion %}
+                <p class="small mb-2">Pedida el {{ reconsideracion.fecha_reconsideracion|date:"d/m/Y" }}</p>
+                <p class="mb-3">{{ reconsideracion.descargo|linebreaksbr }}</p>
+                {% if puede_resolver %}
+                    <a href="{% url 'reclamos_app:reconsideracion_resolver' reconsideracion.pk %}" class="btn btn-primary">Resolver</a>
+                {% endif %}
+            {% elif admite_reconsideracion %}
+                <p class="text-secondary">Si la respuesta no resolvió la intermitencia, podés pedir que se revise el cierre. Cada reclamo admite una sola reconsideración.</p>
+                <a href="{% url 'reclamos_app:reconsideracion_crear' reclamo.pk %}" class="btn btn-primary"><i class="bi bi-arrow-repeat me-1"></i>Pedir reconsideración</a>
+            {% elif reclamo.esta_cerrado %}
+                <p class="text-secondary mb-0">La reconsideración solo puede pedirla un usuario externo.</p>
+            {% else %}
+                <p class="text-secondary mb-0">La reconsideración se habilita cuando el reclamo queda resuelto o rechazado.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="tarjeta mt-4 overflow-hidden">
+    <div class="tarjeta-cuerpo">
+        <h2 class="h6 mb-1">Seguimiento</h2>
+        <p class="mb-0 text-secondary small">Respuestas de la Junta sobre este reclamo.</p>
+    </div>
+    <table class="table tabla tabla-apilada mb-0">
+        <thead><tr><th>Fecha</th><th>Nota</th></tr></thead>
+        <tbody>
+            {% for nota in reclamo.notas.all %}
+            <tr>
+                <td data-etiqueta="Fecha">{{ nota.fecha_comentario|date:"d/m/Y"|default:"—" }}</td>
+                <td data-etiqueta="Nota">{{ nota.comentario }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="2" class="vacio"><div class="estado-vacio"><i class="bi bi-chat-left-text"></i>Todavía no hay notas de seguimiento.</div></td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

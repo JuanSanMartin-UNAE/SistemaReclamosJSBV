@@ -7,6 +7,7 @@ from .models import (
     Barrio, CargoFuncionario, ClasificacionReclamo, EstadoReclamo, Funcionario,
     Prioridad, Rol, TipoReclamo, Usuario,
 )
+from .models.usuario import obtener_rol_externo
 
 
 class EstiloBootstrapMixin:
@@ -88,9 +89,23 @@ class RegistroForm(EstiloBootstrapMixin, forms.ModelForm):
                 self.add_error('password2', error)
 
     def save(self, commit=True):
+<<<<<<< Updated upstream
         usuario = super().save(commit=False)
         usuario.set_password(self.cleaned_data['password1'])
         usuario.rol = Rol.objects.filter(nombre_rol='Usuario').first()
+=======
+        """Guarda el ciudadano con la contraseña hasheada y el rol USUARIO EXTERNO.
+
+        Args:
+            commit: Si es False, devuelve la instancia sin persistirla.
+
+        Returns:
+            Usuario: Cuenta creada.
+        """
+        usuario = super().save(commit=False)
+        usuario.set_password(self.cleaned_data["password1"])
+        usuario.rol = obtener_rol_externo()
+>>>>>>> Stashed changes
         if commit:
             usuario.save()
         return usuario

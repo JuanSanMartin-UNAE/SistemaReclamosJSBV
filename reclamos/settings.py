@@ -148,7 +148,19 @@ DEFAULT_FROM_EMAIL = os.environ.get(
     'DEFAULT_FROM_EMAIL', 'Junta de Saneamiento de Bella Vista <no-responder@juntabellavista.local>'
 )
 
+<<<<<<< Updated upstream
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+=======
+# ==============================================================================
+# CONFIGURACIÓN DE CLAVE PRIMARIA
+# ==============================================================================
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# ==============================================================================
+# GOOGLE MAPS API (ISO 27001 - Inyección desde entorno)
+# ==============================================================================
+GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY', '')
+>>>>>>> Stashed changes

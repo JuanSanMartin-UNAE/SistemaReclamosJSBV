@@ -148,11 +148,6 @@ DEFAULT_FROM_EMAIL = os.environ.get(
     'DEFAULT_FROM_EMAIL', 'Junta de Saneamiento de Bella Vista <no-responder@juntabellavista.local>'
 )
 
-<<<<<<< Updated upstream
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 =======
 # ==============================================================================
 # CONFIGURACIÓN DE CLAVE PRIMARIA
